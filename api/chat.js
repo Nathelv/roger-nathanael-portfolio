@@ -273,9 +273,12 @@ module.exports = async function handler(req, res) {
   const timeout = setTimeout(() => controller.abort(), 20000);
   let geminiRes;
   try {
-    geminiRes = await fetch(GEMINI_URL + '?key=' + encodeURIComponent(apiKey), {
+    geminiRes = await fetch(GEMINI_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': apiKey
+      },
       body: JSON.stringify(payload),
       signal: controller.signal
     });
