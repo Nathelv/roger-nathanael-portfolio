@@ -26,7 +26,7 @@ const MAX_HISTORY_CHARS = 4000;   // total history budget
 const NAV_TARGETS = ['home', 'about', 'skills', 'projects', 'experience', 'education', 'research', 'contact'];
 
 /* ---- Gemini model + endpoint ---- */
-const GEMINI_MODEL = 'gemini-1.5-flash';
+const GEMINI_MODEL = 'gemini-3.5-flash';
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/' + GEMINI_MODEL + ':generateContent';
 
 /* ------------------------------------------------------------
