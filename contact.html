@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Contact Roger Nathanael." />
+  <title>Roger Nathanael | Contact</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script>
+    if (sessionStorage.getItem('rn-loaded') || sessionStorage.getItem('rn-transition')) {
+      document.documentElement.classList.add('no-preloader');
+    }
+  </script>
+</head>
+<body class="loading">
+
+  <div id="preloader">
+    <div class="pre-logo" id="preLogo"></div>
+    <div class="pre-ring"></div>
+    <div class="pre-bar"><i></i></div>
+    <div class="pre-text">Loading Portfolio</div>
+  </div>
+
+  <div class="bg-glow"></div>
+
+  <nav>
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-name">Roger<span>.</span>Nathanael</span>
+        <span class="logo-role">Business Information Technology Student</span>
+      </a>
+      <div class="nav-right">
+        <ul class="nav-links" id="navLinks">
+          <li><a href="index.html"><span class="idx">01</span>Home</a></li>
+          <li><a href="about.html"><span class="idx">02</span>About</a></li>
+          <li><a href="skills.html"><span class="idx">03</span>Skills</a></li>
+          <li><a href="projects.html"><span class="idx">04</span>Projects</a></li>
+          <li><a href="experience.html"><span class="idx">05</span>Experience</a></li>
+          <li><a href="education.html"><span class="idx">06</span>Education</a></li>
+          <li><a href="research.html"><span class="idx">07</span>Research</a></li>
+          <li><a href="contact.html"><span class="idx">08</span>Contact</a></li>
+        </ul>
+        <div class="page-status">
+          <span class="pill"><span class="dot"></span><span id="currentPageName">Contact</span></span>
+          <span class="page-count txt"><b id="currentPageNo">08</b> / 08</span>
+        </div>
+      </div>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <main>
+    <section class="section" id="contact">
+      <div class="container">
+        <div class="contact-card reveal zoom">
+          <span class="section-tag">Let's Connect</span>
+          <h2>Open to internship opportunities</h2>
+          <p>I'm currently open to internship opportunities and collaborations in technology, information systems, data, and related fields. Want the full picture? Grab my resume for a complete overview of my education, skills, projects, and experience.</p>
+          <div class="contact-actions">
+            <a class="btn btn-primary" href="mailto:naelnathel@gmail.com?subject=Hello%20Roger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>Send Email</a>
+            <a class="btn btn-outline" href="https://www.linkedin.com/in/roger-nathanael" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 11-.01 5.01A2.5 2.5 0 014.98 3.5zM3 8.98h4v12H3v-12zm7 0h3.8v1.64h.05c.53-1 1.83-2.06 3.76-2.06 4.02 0 4.76 2.65 4.76 6.1v6.32h-4v-5.6c0-1.34-.02-3.06-1.87-3.06-1.87 0-2.16 1.46-2.16 2.96v5.7H10v-12z"/></svg>LinkedIn</a>
+            <a class="btn btn-outline" href="assets/Roger-Nathanael-CV.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>Download CV</a>
+          </div>
+          <div class="contact-info">
+            <span>✉️ <a href="mailto:naelnathel@gmail.com">naelnathel@gmail.com</a></span>
+            <span>in <a href="https://www.linkedin.com/in/roger-nathanael" target="_blank" rel="noopener">linkedin.com/in/roger-nathanael</a></span>
+            <span>📍 Bekasi, West Java</span>
+          </div>
+          <p class="foot">&copy; <span id="year"></span> Roger Nathanael. Built with a midnight blue theme.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/portfolio-data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

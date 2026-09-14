@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Academic projects by Roger Nathanael." />
+  <title>Roger Nathanael | Projects</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script>
+    if (sessionStorage.getItem('rn-loaded') || sessionStorage.getItem('rn-transition')) {
+      document.documentElement.classList.add('no-preloader');
+    }
+  </script>
+</head>
+<body class="loading">
+
+  <div id="preloader">
+    <div class="pre-logo" id="preLogo"></div>
+    <div class="pre-ring"></div>
+    <div class="pre-bar"><i></i></div>
+    <div class="pre-text">Loading Portfolio</div>
+  </div>
+
+  <div class="bg-glow"></div>
+
+  <nav>
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-name">Roger<span>.</span>Nathanael</span>
+        <span class="logo-role">Business Information Technology Student</span>
+      </a>
+      <div class="nav-right">
+        <ul class="nav-links" id="navLinks">
+          <li><a href="index.html"><span class="idx">01</span>Home</a></li>
+          <li><a href="about.html"><span class="idx">02</span>About</a></li>
+          <li><a href="skills.html"><span class="idx">03</span>Skills</a></li>
+          <li><a href="projects.html"><span class="idx">04</span>Projects</a></li>
+          <li><a href="experience.html"><span class="idx">05</span>Experience</a></li>
+          <li><a href="education.html"><span class="idx">06</span>Education</a></li>
+          <li><a href="research.html"><span class="idx">07</span>Research</a></li>
+          <li><a href="contact.html"><span class="idx">08</span>Contact</a></li>
+        </ul>
+        <div class="page-status">
+          <span class="pill"><span class="dot"></span><span id="currentPageName">Projects</span></span>
+          <span class="page-count txt"><b id="currentPageNo">04</b> / 08</span>
+        </div>
+      </div>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <main>
+    <section class="section" id="projects">
+      <div class="container">
+        <div class="section-head reveal up"><span class="section-tag">Featured Projects</span><h2>Selected work</h2></div>
+        <div class="project-grid">
+          <a class="project-card reveal up s1" href="project-iot-sawit.html">
+            <div class="project-top"><h3>🥇 IoT Smart Sawit Plantation</h3><span class="badge">1st Place</span></div>
+            <span class="project-sub">Smart Application</span>
+            <p>IoT-based smart plantation solution for monitoring and decision-making in palm plantation management.</p>
+            <div class="tags"><span>IoT</span><span>Sensors</span><span>Smart Agriculture</span><span>Team Project</span></div>
+            <span class="view-more">View details <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></span>
+          </a>
+          <a class="project-card reveal up s2" href="project-healthylife.html">
+            <div class="project-top"><h3>🩺 HealthyLife Hub</h3></div>
+            <span class="project-sub">Programming for Business</span>
+            <p>Web-based health education and monitoring platform combining application functionality with structured data.</p>
+            <div class="tags"><span>Web Development</span><span>Database</span><span>PHP</span><span>MySQL</span></div>
+            <span class="view-more">View details <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></span>
+          </a>
+          <a class="project-card reveal up s3" href="project-aqquas.html">
+            <div class="project-top"><h3>🐟 Aqquas</h3></div>
+            <span class="project-sub">User Research &amp; Design</span>
+            <p>Digital product concept for freshwater and saltwater fish hobbyists, developed through user research and UX design processes.</p>
+            <div class="tags"><span>UX Research</span><span>UI/UX</span><span>Wireframe</span><span>Product Design</span></div>
+            <span class="view-more">View details <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></span>
+          </a>
+          <a class="project-card reveal up s4" href="project-churn.html">
+            <div class="project-top"><h3>📊 Customer Churn Prediction</h3></div>
+            <span class="project-sub">Machine Learning</span>
+            <p>Customer churn prediction using Random Forest, Decision Tree, and Logistic Regression.</p>
+            <div class="tags"><span>Machine Learning</span><span>Python</span><span>Data Analysis</span></div>
+            <span class="view-more">View details <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></span>
+          </a>
+          <a class="project-card reveal up s5" href="project-kompas.html">
+            <div class="project-top"><h3>📋 KOMPAS</h3></div>
+            <span class="project-sub">Information Systems Project Management</span>
+            <p>Academic project management platform designed to help students and lecturers manage academic projects.</p>
+            <div class="tags"><span>Project Management</span><span>Information Systems</span><span>Agile Scrum</span></div>
+            <span class="view-more">View details <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/portfolio-data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

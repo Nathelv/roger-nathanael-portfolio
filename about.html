@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="About Roger Nathanael." />
+  <title>Roger Nathanael | About</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script>
+    if (sessionStorage.getItem('rn-loaded') || sessionStorage.getItem('rn-transition')) {
+      document.documentElement.classList.add('no-preloader');
+    }
+  </script>
+</head>
+<body class="loading">
+
+  <div id="preloader">
+    <div class="pre-logo" id="preLogo"></div>
+    <div class="pre-ring"></div>
+    <div class="pre-bar"><i></i></div>
+    <div class="pre-text">Loading Portfolio</div>
+  </div>
+
+  <div class="bg-glow"></div>
+
+  <nav>
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-name">Roger<span>.</span>Nathanael</span>
+        <span class="logo-role">Business Information Technology Student</span>
+      </a>
+      <div class="nav-right">
+        <ul class="nav-links" id="navLinks">
+          <li><a href="index.html"><span class="idx">01</span>Home</a></li>
+          <li><a href="about.html"><span class="idx">02</span>About</a></li>
+          <li><a href="skills.html"><span class="idx">03</span>Skills</a></li>
+          <li><a href="projects.html"><span class="idx">04</span>Projects</a></li>
+          <li><a href="experience.html"><span class="idx">05</span>Experience</a></li>
+          <li><a href="education.html"><span class="idx">06</span>Education</a></li>
+          <li><a href="research.html"><span class="idx">07</span>Research</a></li>
+          <li><a href="contact.html"><span class="idx">08</span>Contact</a></li>
+        </ul>
+        <div class="page-status">
+          <span class="pill"><span class="dot"></span><span id="currentPageName">About</span></span>
+          <span class="page-count txt"><b id="currentPageNo">02</b> / 08</span>
+        </div>
+      </div>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <main>
+    <section class="section" id="about">
+      <div class="container">
+        <div class="section-head reveal up"><span class="section-tag">About Me</span><h2>Bridging business, technology &amp; people</h2></div>
+        <div class="about-grid">
+          <div class="reveal left s1">
+            <p>I am a Business Information Technology student at BINUS University Bekasi with an interest in how technology can be applied to solve real-world problems.</p>
+            <p>My academic journey has let me explore information systems, UI/UX design, programming, data modelling, machine learning, and IoT.</p>
+            <p>I enjoy working on projects that combine technical thinking with business and user perspectives. Through team-based projects I've also developed my communication, collaboration, problem-solving, and adaptability skills.</p>
+          </div>
+          <div class="stats reveal right s2">
+            <div class="stat"><div class="num">3.81</div><div class="label">Current GPA</div></div>
+            <div class="stat"><div class="num">1st</div><div class="label">IoT Smart App Winner</div></div>
+            <div class="stat"><div class="num">5</div><div class="label">Featured Projects</div></div>
+            <div class="stat"><div class="num">BIT</div><div class="label">BINUS University</div></div>
+          </div>
+        </div>
+
+        <div class="journey reveal up s3">
+          <span class="journey-label">My Journey</span>
+          <div class="journey-track">
+            <span class="journey-step">Curiosity</span>
+            <span class="journey-arrow">→</span>
+            <span class="journey-step">Design</span>
+            <span class="journey-arrow">→</span>
+            <span class="journey-step">Programming</span>
+            <span class="journey-arrow">→</span>
+            <span class="journey-step">Data</span>
+            <span class="journey-arrow">→</span>
+            <span class="journey-step">IoT</span>
+            <span class="journey-arrow">→</span>
+            <span class="journey-step accent-step">Business &amp; Technology</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/portfolio-data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
