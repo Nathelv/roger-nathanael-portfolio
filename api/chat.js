@@ -30,7 +30,7 @@ const NAV_TARGETS = ['home', 'about', 'skills', 'projects', 'experience', 'educa
    change GEMINI_MODEL to a valid one such as 'gemini-2.5-flash' or
    'gemini-1.5-flash'. gemini-2.0-flash is the fastest for a lightweight
    portfolio chatbot. Only this one line needs editing. */
-const GEMINI_MODEL = 'gemini-2.0-flash';
+const GEMINI_MODEL = 'gemini-3.5-flash';
 const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models/' + GEMINI_MODEL;
 const GEMINI_URL = GEMINI_BASE + ':generateContent';
 const GEMINI_STREAM_URL = GEMINI_BASE + ':streamGenerateContent?alt=sse';
