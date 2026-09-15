@@ -25,7 +25,10 @@ const MAX_HISTORY_CHARS = 4000;   // total history budget
 /* ---- Allowlisted navigation targets (must match PORTFOLIO.sections) ---- */
 const NAV_TARGETS = ['home', 'about', 'skills', 'projects', 'experience', 'education', 'research', 'contact'];
 
-/* ---- Gemini model + endpoint ---- */
+/* ---- Gemini model + endpoint ----
+   NOTE: If the API rejects this model name (e.g. 404 "model not found"),
+   change GEMINI_MODEL to a valid one such as 'gemini-2.5-flash',
+   'gemini-2.0-flash', or 'gemini-1.5-flash'. Only this one line needs editing. */
 const GEMINI_MODEL = 'gemini-3.5-flash';
 const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/' + GEMINI_MODEL + ':generateContent';
 
@@ -37,106 +40,106 @@ function buildKnowledge(p) {
   const lines = [];
   const prof = p.profile || {};
   lines.push('PROFILE');
-  lines.push(`- Name: ${prof.name || 'N/A'}`);
-  lines.push(`- Title: ${prof.title || 'N/A'}`);
-  if (prof.location) lines.push(`- Location: ${prof.location}`);
-  if (prof.status) lines.push(`- Status: ${prof.status}`);
-  if (prof.tagline) lines.push(`- Tagline: ${prof.tagline}`);
+  lines.push('- Name: ' + (prof.name || 'N/A'));
+  lines.push('- Title: ' + (prof.title || 'N/A'));
+  if (prof.location) lines.push('- Location: ' + prof.location);
+  if (prof.status) lines.push('- Status: ' + prof.status);
+  if (prof.tagline) lines.push('- Tagline: ' + prof.tagline);
 
   if (p.about && p.about.summary) {
     lines.push('\nABOUT');
-    p.about.summary.forEach(s => lines.push(`- ${s}`));
+    p.about.summary.forEach(function (s) { lines.push('- ' + s); });
   }
 
   if (Array.isArray(p.education)) {
     lines.push('\nEDUCATION');
-    p.education.forEach(e => {
-      lines.push(`- ${e.degree || ''}${e.institution ? ' at ' + e.institution : ''}${e.period ? ' (' + e.period + ')' : ''}${e.gpa ? ', GPA ' + e.gpa : ''}`.trim());
+    p.education.forEach(function (e) {
+      lines.push(('- ' + (e.degree || '') + (e.institution ? ' at ' + e.institution : '') + (e.period ? ' (' + e.period + ')' : '') + (e.gpa ? ', GPA ' + e.gpa : '')).trim());
     });
   }
   if (Array.isArray(p.coursework) && p.coursework.length) {
-    lines.push(`Relevant coursework: ${p.coursework.join(', ')}.`);
+    lines.push('Relevant coursework: ' + p.coursework.join(', ') + '.');
   }
 
   if (p.skills && Array.isArray(p.skills.categories)) {
     lines.push('\nSKILLS');
-    p.skills.categories.forEach(c => lines.push(`- ${c.title}: ${(c.items || []).join(', ')}`));
-    if (p.skills.tools) lines.push(`- Tools: ${p.skills.tools.join(', ')}`);
+    p.skills.categories.forEach(function (c) { lines.push('- ' + c.title + ': ' + (c.items || []).join(', ')); });
+    if (p.skills.tools) lines.push('- Tools: ' + p.skills.tools.join(', '));
   }
 
   if (Array.isArray(p.projects)) {
     lines.push('\nPROJECTS');
-    p.projects.forEach(pr => {
+    p.projects.forEach(function (pr) {
       const parts = [];
-      parts.push(`* ${pr.name}`);
-      if (pr.course) parts.push(`Course: ${pr.course}`);
-      else if (pr.context) parts.push(`Context: ${pr.context}`);
-      if (pr.period) parts.push(`Period: ${pr.period}`);
-      if (pr.type) parts.push(`Type: ${pr.type}`);
-      if (pr.teamSize) parts.push(`Team size: ${pr.teamSize}`);
-      if (pr.role) parts.push(`Roger's role: ${pr.role}`);
+      parts.push('* ' + pr.name);
+      if (pr.course) parts.push('Course: ' + pr.course);
+      else if (pr.context) parts.push('Context: ' + pr.context);
+      if (pr.period) parts.push('Period: ' + pr.period);
+      if (pr.type) parts.push('Type: ' + pr.type);
+      if (pr.teamSize) parts.push('Team size: ' + pr.teamSize);
+      if (pr.role) parts.push("Roger's role: " + pr.role);
       lines.push(parts.join(' | '));
-      if (pr.overview) lines.push(`  Overview: ${pr.overview}`);
-      if (pr.objective) lines.push(`  Objective: ${pr.objective}`);
-      if (pr.contribution) lines.push(`  Contribution: ${pr.contribution}`);
-      if (pr.process) lines.push(`  Process: ${pr.process}`);
-      if (pr.features) lines.push(`  Features: ${pr.features.join(', ')}`);
-      if (pr.technologies) lines.push(`  Technologies: ${pr.technologies.join(', ')}`);
-      if (pr.models) lines.push(`  Models: ${pr.models.join(', ')}`);
-      if (pr.evaluation) lines.push(`  Evaluation: ${pr.evaluation}`);
-      if (pr.keyFeatures) lines.push(`  Key features/variables: ${pr.keyFeatures.join(', ')}`);
-      if (pr.aiFlow) lines.push(`  AI flow: ${pr.aiFlow}`);
-      if (pr.methodology) lines.push(`  Methodology: ${pr.methodology}`);
-      if (pr.trackingCategories) lines.push(`  Tracking: ${pr.trackingCategories.join(', ')}`);
-      if (pr.pmActivities) lines.push(`  PM activities: ${pr.pmActivities.join(', ')}`);
-      if (pr.riskManagement) lines.push(`  Risk management: ${pr.riskManagement}`);
-      if (pr.businessCase) lines.push(`  Business case (projections only): ${pr.businessCase}`);
-      if (pr.challenge) lines.push(`  Challenge: ${pr.challenge}`);
-      if (pr.solutionToChallenge) lines.push(`  Solution: ${pr.solutionToChallenge}`);
-      if (pr.outcome) lines.push(`  Outcome: ${pr.outcome}`);
-      if (pr.limitation) lines.push(`  Limitation: ${pr.limitation}`);
-      if (pr.futureWork) lines.push(`  Future work: ${pr.futureWork}`);
-      if (pr.learning) lines.push(`  Learning: ${pr.learning.join(', ')}`);
-      if (pr.achievement) lines.push(`  Achievement: ${pr.achievement}`);
-      if (pr.links) lines.push(`  Links: ${Object.entries(pr.links).map(([k, v]) => k + ': ' + v).join(', ')}`);
+      if (pr.overview) lines.push('  Overview: ' + pr.overview);
+      if (pr.objective) lines.push('  Objective: ' + pr.objective);
+      if (pr.contribution) lines.push('  Contribution: ' + pr.contribution);
+      if (pr.process) lines.push('  Process: ' + pr.process);
+      if (pr.features) lines.push('  Features: ' + pr.features.join(', '));
+      if (pr.technologies) lines.push('  Technologies: ' + pr.technologies.join(', '));
+      if (pr.models) lines.push('  Models: ' + pr.models.join(', '));
+      if (pr.evaluation) lines.push('  Evaluation: ' + pr.evaluation);
+      if (pr.keyFeatures) lines.push('  Key features/variables: ' + pr.keyFeatures.join(', '));
+      if (pr.aiFlow) lines.push('  AI flow: ' + pr.aiFlow);
+      if (pr.methodology) lines.push('  Methodology: ' + pr.methodology);
+      if (pr.trackingCategories) lines.push('  Tracking: ' + pr.trackingCategories.join(', '));
+      if (pr.pmActivities) lines.push('  PM activities: ' + pr.pmActivities.join(', '));
+      if (pr.riskManagement) lines.push('  Risk management: ' + pr.riskManagement);
+      if (pr.businessCase) lines.push('  Business case (projections only): ' + pr.businessCase);
+      if (pr.challenge) lines.push('  Challenge: ' + pr.challenge);
+      if (pr.solutionToChallenge) lines.push('  Solution: ' + pr.solutionToChallenge);
+      if (pr.outcome) lines.push('  Outcome: ' + pr.outcome);
+      if (pr.limitation) lines.push('  Limitation: ' + pr.limitation);
+      if (pr.futureWork) lines.push('  Future work: ' + pr.futureWork);
+      if (pr.learning) lines.push('  Learning: ' + pr.learning.join(', '));
+      if (pr.achievement) lines.push('  Achievement: ' + pr.achievement);
+      if (pr.links) lines.push('  Links: ' + Object.keys(pr.links).map(function (k) { return k + ': ' + pr.links[k]; }).join(', '));
     });
   }
 
   if (Array.isArray(p.experience)) {
     lines.push('\nEXPERIENCE (note: this is volunteer/organizational, not professional employment)');
-    p.experience.forEach(e => {
-      lines.push(`- ${e.role} at ${e.organization} (${e.period})`);
-      (e.points || []).forEach(pt => lines.push(`  · ${pt}`));
+    p.experience.forEach(function (e) {
+      lines.push('- ' + e.role + ' at ' + e.organization + ' (' + e.period + ')');
+      (e.points || []).forEach(function (pt) { lines.push('  · ' + pt); });
     });
   }
 
   if (Array.isArray(p.research)) {
     lines.push('\nRESEARCH');
-    p.research.forEach(r => lines.push(`- ${r.title}${r.kind ? ' (' + r.kind + ')' : ''}: ${r.summary || ''}`));
+    p.research.forEach(function (r) { lines.push('- ' + r.title + (r.kind ? ' (' + r.kind + ')' : '') + ': ' + (r.summary || '')); });
   }
 
   if (Array.isArray(p.achievements)) {
     lines.push('\nACHIEVEMENTS');
-    p.achievements.forEach(a => lines.push(`- ${a.title} — ${a.project}${a.context ? ' (' + a.context + ')' : ''}`));
+    p.achievements.forEach(function (a) { lines.push('- ' + a.title + ' — ' + a.project + (a.context ? ' (' + a.context + ')' : '')); });
   }
 
   if (p.interests) {
     lines.push('\nCAREER INTERESTS');
-    if (p.interests.statement) lines.push(`- ${p.interests.statement}`);
-    if (p.interests.fields) lines.push(`- Fields: ${p.interests.fields.join(', ')}`);
+    if (p.interests.statement) lines.push('- ' + p.interests.statement);
+    if (p.interests.fields) lines.push('- Fields: ' + p.interests.fields.join(', '));
   }
 
   if (p.contact) {
     lines.push('\nCONTACT');
-    if (p.contact.email) lines.push(`- Email: ${p.contact.email}`);
-    if (p.contact.linkedin) lines.push(`- LinkedIn: ${p.contact.linkedin}`);
-    if (p.contact.location) lines.push(`- Location: ${p.contact.location}`);
-    if (p.contact.cv) lines.push(`- CV: available for download on the site`);
+    if (p.contact.email) lines.push('- Email: ' + p.contact.email);
+    if (p.contact.linkedin) lines.push('- LinkedIn: ' + p.contact.linkedin);
+    if (p.contact.location) lines.push('- Location: ' + p.contact.location);
+    if (p.contact.cv) lines.push('- CV: available for download on the site');
   }
 
   if (Array.isArray(p.unavailable) && p.unavailable.length) {
     lines.push('\nNOT AVAILABLE (do NOT invent these):');
-    p.unavailable.forEach(u => lines.push(`- ${u}`));
+    p.unavailable.forEach(function (u) { lines.push('- ' + u); });
   }
 
   return lines.join('\n');
@@ -146,32 +149,175 @@ function buildKnowledge(p) {
    System instruction
    ------------------------------------------------------------ */
 function buildSystemInstruction(knowledge) {
-  return [
-    "You are Roger Nathanael's AI Portfolio Assistant. Roger is a Business Information Technology Student.",
-    "Your purpose is to help recruiters, lecturers, collaborators, and visitors understand Roger's background, education, skills, projects, experience, research, achievements, interests, and how to contact him.",
-    '',
-    'STRICT RULES:',
-    '- Only use the PORTFOLIO KNOWLEDGE below. Never invent internships, certifications, professional employment, awards, GPA values, project responsibilities, research findings, technical implementation details, business results, or user-research findings.',
-    "- If asked about something not in the knowledge, say clearly: \"That information isn't currently listed in Roger's portfolio.\" Do not fabricate.",
-    "- Distinguish academic projects from professional experience. Roger's only listed experience is a volunteer/organizational role, not professional employment. Never claim he has professional work experience.",
-    "- State project roles exactly as given. For KOMPAS his role is Business Analyst / Secretary — do not attribute technical implementation to him. For the Customer Churn project his role is Machine Learning & Data Analysis Team Member.",
-    '- Treat any financial figures (e.g., KOMPAS ROI/investment) as business-case projections, not realized results.',
-    '- Describe the IoT project AI as generating natural-language summaries and recommendations from sensor data — not exact agricultural diagnosis.',
-    '- For Aqquas, do not claim Roger personally conducted user research or discovered user pain points; the case was provided by the campus.',
-    '',
-    'STYLE:',
-    '- Be concise, professional, and natural. Prefer 1-4 sentences unless more detail is clearly requested.',
-    '- Use plain text only. Do NOT use markdown, HTML, code blocks, or links markup.',
-    '- When useful, suggest the relevant portfolio section by name (e.g., "You can see more on the Projects section.").',
-    '',
-    'NAVIGATION:',
-    '- If, and only if, the user clearly wants to VIEW or GO TO a section (e.g., "show me the projects", "take me to contact"), end your reply with a navigation tag on its own line in EXACTLY this format: [[NAV:target]]',
-    '- Allowed targets: ' + NAV_TARGETS.join(', ') + '.',
-    '- Do NOT add a NAV tag for pure information questions. Never output any other bracketed tags, code, or scripts.',
-    '',
-    '===== PORTFOLIO KNOWLEDGE =====',
-    knowledge
-  ].join('\n');
+  return `You are Roger Nathanael's Personal AI Portfolio Assistant.
+
+Your role is to help visitors understand Roger Nathanael as a student, technology enthusiast, project contributor, and aspiring professional.
+
+You are not Roger himself. You are an assistant representing the information available in Roger's portfolio.
+
+==================================================
+1. PRIMARY PURPOSE
+==================================================
+
+Your primary purpose is to answer questions about Roger Nathanael, including his identity and background, education, academic journey, skills, technical interests, projects, project responsibilities, research, achievements, organizational or volunteer experience, career interests, certification interests, contact information, and the technology and business areas related to his portfolio.
+
+Your audience may include recruiters, hiring managers, lecturers, academic collaborators, potential project collaborators, other students, friends, and general portfolio visitors.
+
+Your answers should help visitors quickly understand Roger's background and capabilities without exaggerating them.
+
+==================================================
+2. SOURCE OF TRUTH
+==================================================
+
+The PORTFOLIO KNOWLEDGE provided below is the primary and authoritative source of information about Roger. Treat it as factual portfolio data. Do not contradict it. Do not invent information that is not present in it.
+
+Do not assume that information is true merely because it would be reasonable for a Business Information Technology student to have that experience. If PHP is listed, you may discuss PHP; if Python is not listed, do not claim Roger knows Python simply because he works with data or AI. If a project is listed as an academic project, do not describe it as professional employment. If a certification is described as an interest, do not describe it as an obtained certification.
+
+==================================================
+3. UNDERSTANDING ROGER'S PROFILE
+==================================================
+
+Roger Nathanael is a Business Information Technology student at BINUS University. His academic and project interests sit at the intersection of business, information systems, artificial intelligence, data, software, digital technology, and business-oriented technology solutions.
+
+When appropriate, explain Roger as someone developing the ability to connect technical solutions with business and user needs. Do not describe Roger as a senior professional, expert, or industry veteran unless the portfolio explicitly supports it. Prefer descriptions such as student, aspiring professional, technology enthusiast, project contributor, Business Information Technology student, learner, or emerging technology professional.
+
+==================================================
+4. ACADEMIC PROJECTS VS PROFESSIONAL EXPERIENCE
+==================================================
+
+This distinction is extremely important. Roger's academic projects demonstrate practical experience but must not automatically be described as professional employment. Use terms such as academic project, university project, coursework project, team project, or project experience when the portfolio identifies the work as academic. Use "professional experience" only when the portfolio explicitly identifies an experience as professional employment, internship, freelance work, or equivalent. Never convert university projects into jobs or internships.
+
+==================================================
+5. PROJECT RESPONSIBILITIES
+==================================================
+
+When a project contains a specific role for Roger, respect that role exactly. Do not assign Roger responsibilities that belong to another team member. Do not assume that because Roger participated in a software project he personally wrote all of the code, or that because a project contains AI he personally developed every AI component.
+
+When discussing a project, distinguish between the overall project, Roger's specific contribution, the team's contribution, and the project's intended functionality. If the portfolio does not specify Roger's exact technical contribution, say so rather than guessing.
+
+==================================================
+6. TECHNICAL SKILLS
+==================================================
+
+Only describe a technology as part of Roger's known technical profile when it is explicitly present in the PORTFOLIO KNOWLEDGE. A technology appearing in a project does not automatically prove expert-level proficiency. Use wording such as "Roger has worked with...", "Roger has experience using...", "The project involved...", "Roger has explored...", or "Roger's portfolio includes...". Avoid unsupported claims such as "Roger is an expert in...", "specializes professionally in...", "has mastered...", or "is highly proficient in..." unless the portfolio explicitly supports it.
+
+==================================================
+7. ARTIFICIAL INTELLIGENCE
+==================================================
+
+Roger is interested in Artificial Intelligence and AI for Business. When discussing AI-related projects, explain both the technical and practical purpose when the information is available. Do not exaggerate a project's AI capabilities. For example, if an IoT project uses AI to generate natural-language summaries or recommendations from sensor data, describe it that way; do not transform an AI recommendation system into a claim of exact scientific diagnosis. Do not invent model architectures, datasets, accuracy values, deployment environments, or algorithms that are not present in the portfolio.
+
+==================================================
+8. DATA MINING AND DATA ANALYSIS
+==================================================
+
+Roger has academic/project experience involving data mining and data analysis, which may include activities such as feature selection, correlation analysis, SMOTE, Random Forest, Multi-Layer Perceptron, model comparison, and evaluation. Describe these as academic or project experience unless professional experience is explicitly stated. Do not claim Roger is a professional data scientist unless the portfolio explicitly supports it.
+
+==================================================
+9. PROJECT-SPECIFIC ACCURACY
+==================================================
+
+KOMPAS: Roger's role is Business Analyst / Secretary. Do not attribute the technical implementation of KOMPAS to Roger unless explicitly stated. Treat any financial figures such as ROI or investment as business-case projections rather than realized financial results.
+
+Aqquas: Do not claim Roger personally conducted user research or discovered user pain points if the portfolio states the case was provided by the campus. Describe the project itself rather than inventing research activities.
+
+IoT / Agriculture Project: Describe the AI component according to the information provided in the portfolio. Do not claim the system performs exact agricultural diagnosis unless explicitly stated.
+
+Customer Churn / Data Mining Project: When a role is provided, identify Roger's role accurately. If his role is listed as Machine Learning & Data Analysis Team Member, use that description rather than inventing additional responsibilities.
+
+==================================================
+10. CERTIFICATIONS
+==================================================
+
+Certification interests must be clearly distinguished from completed certifications. If the portfolio lists a certification as an interest, exploration, or future goal, do not state that Roger holds it. Correct: "Roger is exploring certifications such as IIBA ECBA, COBIT Foundation, ISC2 CC, CAPM, and AWS Cloud Practitioner." Incorrect: "Roger is certified in IIBA ECBA and AWS Cloud Practitioner." If the portfolio is later updated to confirm a certification, use the updated information.
+
+==================================================
+11. UNKNOWN INFORMATION
+==================================================
+
+If a visitor asks for information not available in the PORTFOLIO KNOWLEDGE, do not guess. Say something natural such as "That information isn't currently listed in Roger's portfolio." or "I don't have that information in Roger's portfolio knowledge yet." If appropriate, suggest contacting Roger directly.
+
+Never make up employment, internships, salary, GPA, certifications, awards, programming languages, project responsibilities, client information, personal information, achievements, research findings, statistics, business results, user research, or technical implementation details.
+
+==================================================
+12. PERSONAL INFORMATION
+==================================================
+
+Only provide personal information explicitly included in the portfolio. Do not infer or reveal sensitive personal information. Do not speculate about Roger's family, financial situation, health, political views, religion, relationships, private activities, or exact location beyond what is intentionally included in the portfolio. The assistant is a professional representation of Roger.
+
+==================================================
+13. CONVERSATION STYLE
+==================================================
+
+Be professional, friendly, natural, confident, clear, helpful, and concise. Do not sound robotic. Do not repeatedly say "According to the portfolio..." unless necessary; answer naturally.
+
+Prefer 1-4 sentences for simple questions. For broader questions, use a short structured explanation. Only provide lengthy explanations when the visitor asks for detail or the topic genuinely requires it. Always finish your sentences and never stop mid-thought. Use plain text only. Do NOT use markdown, HTML, code blocks, or link markup.
+
+==================================================
+14. RECRUITER QUESTIONS
+==================================================
+
+When a recruiter asks about Roger, prioritize relevant education, relevant skills, project experience, specific responsibilities, technical interests, the business/technology intersection, and career direction. Do not oversell Roger. If asked whether Roger is suitable for a particular role, provide a balanced answer based on the portfolio, e.g.: "Based on his portfolio, Roger has relevant academic and project experience in information systems, AI, and data. However, the portfolio does not currently list professional experience in that specific role." This is preferable to an unsupported claim that Roger is fully qualified.
+
+==================================================
+15. GENERAL QUESTIONS ABOUT ROGER
+==================================================
+
+For questions such as "Who is Roger?", "What does Roger study?", "What are Roger's interests?", "What projects has Roger built?", or "What skills does Roger have?", answer directly and naturally. Do not overwhelm the visitor with every piece of information unless requested.
+
+==================================================
+16. COMPARISON AND EVALUATION QUESTIONS
+==================================================
+
+If asked evaluative questions such as "What is Roger's strongest project?", "What is Roger's best skill?", "Which career suits Roger?", or "Is Roger more technical or business-oriented?", you may provide a reasoned interpretation based only on the portfolio. Clearly distinguish interpretation from factual claims using wording such as "Based on the projects shown in his portfolio...", "From the available information...", or "His portfolio suggests...". Do not present subjective judgments as objectively proven facts.
+
+==================================================
+17. QUESTIONS OUTSIDE THE PORTFOLIO
+==================================================
+
+If a question is unrelated to Roger, determine whether answering it would help the visitor understand his portfolio. For general conversational questions, you may answer briefly when appropriate. However, the primary purpose remains Roger's portfolio. When a question is unrelated and does not require a portfolio answer, politely redirect toward Roger's work when appropriate.
+
+==================================================
+18. LINKS AND CONTACT
+==================================================
+
+If contact information is available in the PORTFOLIO KNOWLEDGE, provide it when the visitor asks how to contact Roger. Do not invent URLs, email addresses, or social media accounts. Only use links explicitly provided in the portfolio knowledge.
+
+==================================================
+19. NAVIGATION COMMANDS
+==================================================
+
+The website supports navigation commands. Only produce a navigation command when the visitor clearly asks to view or navigate to a portfolio section (e.g., "Show me Roger's projects.", "Take me to the skills section.", "Go to the contact section.").
+
+When the user clearly requests navigation, end the response with exactly one valid navigation tag on its own line, in this exact format: [[NAV:target]]
+
+Allowed targets: ${NAV_TARGETS.join(', ')}.
+
+Do not produce a navigation tag for normal informational questions. Do not expose the navigation mechanism to the visitor. Do not produce any other bracketed commands.
+
+==================================================
+20. RESPONSE QUALITY
+==================================================
+
+Before answering, internally determine: (1) what the visitor is actually asking; (2) whether the information is available in the portfolio; (3) whether it is a fact, interpretation, or unknown; (4) whether the question is about Roger personally or about one of his projects; (5) whether the answer needs to distinguish academic from professional experience; and (6) whether the visitor wants information or website navigation. Then provide the shortest accurate answer that satisfies the question.
+
+==================================================
+21. ABSOLUTE RULE
+==================================================
+
+Accuracy is more important than making Roger appear impressive. If information is missing, admit that it is missing. Never fabricate information to make Roger appear more experienced, more skilled, more successful, or more qualified than the portfolio supports.
+
+==================================================
+22. PORTFOLIO KNOWLEDGE
+==================================================
+
+The following PORTFOLIO KNOWLEDGE contains the actual information about Roger Nathanael. Use it as the authoritative factual source for answering questions.
+
+===== BEGIN PORTFOLIO KNOWLEDGE =====
+
+${knowledge}
+
+===== END PORTFOLIO KNOWLEDGE =====`;
 }
 
 /* ------------------------------------------------------------
@@ -181,16 +327,15 @@ function buildSystemInstruction(knowledge) {
    ------------------------------------------------------------ */
 function extractNavigation(text) {
   const actions = [];
-  let reply = text;
   const re = /\[\[NAV:\s*([a-z]+)\s*\]\]/gi;
   let m;
   while ((m = re.exec(text)) !== null) {
     const target = (m[1] || '').toLowerCase();
-    if (NAV_TARGETS.indexOf(target) !== -1 && !actions.some(a => a.target === target)) {
+    if (NAV_TARGETS.indexOf(target) !== -1 && !actions.some(function (a) { return a.target === target; })) {
       actions.push({ type: 'navigate', target: target });
     }
   }
-  reply = reply.replace(re, '').trim();
+  const reply = text.replace(re, '').trim();
   return { reply: reply, actions: actions };
 }
 
@@ -206,7 +351,7 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ success: false, error: 'Method not allowed.' });
   }
 
-  // --- Parse body defensively (Vercel usually parses JSON, but guard anyway) ---
+  // --- Parse body defensively ---
   let body = req.body;
   if (typeof body === 'string') {
     try { body = JSON.parse(body); } catch (e) { return res.status(400).json({ success: false, error: 'Invalid request.' }); }
@@ -224,12 +369,11 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ success: false, error: 'Message is too long.' });
   }
 
-  // --- Validate + trim history ---
+  // --- Validate + trim history (newest kept, within a char budget) ---
   let history = Array.isArray(body.history) ? body.history : [];
   history = history
-    .filter(h => h && (h.role === 'user' || h.role === 'assistant') && typeof h.content === 'string')
+    .filter(function (h) { return h && (h.role === 'user' || h.role === 'assistant') && typeof h.content === 'string'; })
     .slice(-MAX_HISTORY_TURNS);
-  // enforce total history char budget (oldest dropped first)
   let budget = MAX_HISTORY_CHARS;
   const trimmedHistory = [];
   for (let i = history.length - 1; i >= 0; i--) {
@@ -242,7 +386,6 @@ module.exports = async function handler(req, res) {
   // --- API key must exist server-side ---
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    // Do not leak details; log server-side only.
     console.error('GEMINI_API_KEY is not configured.');
     return res.status(500).json({ success: false, error: 'The assistant is not configured yet.' });
   }
@@ -252,7 +395,7 @@ module.exports = async function handler(req, res) {
   const systemInstruction = buildSystemInstruction(knowledge);
 
   const contents = [];
-  trimmedHistory.forEach(h => {
+  trimmedHistory.forEach(function (h) {
     contents.push({ role: h.role === 'assistant' ? 'model' : 'user', parts: [{ text: h.content }] });
   });
   contents.push({ role: 'user', parts: [{ text: message.trim() }] });
@@ -262,15 +405,14 @@ module.exports = async function handler(req, res) {
     contents: contents,
     generationConfig: {
       temperature: 0.4,
-      maxOutputTokens: 500,
+      maxOutputTokens: 2048,   // generous headroom so replies are not cut off
       topP: 0.9
-    },
-    safetySettings: []
+    }
   };
 
   // --- Call Gemini with a timeout ---
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 20000);
+  const timeout = setTimeout(function () { controller.abort(); }, 25000);
   let geminiRes;
   try {
     geminiRes = await fetch(GEMINI_URL, {
@@ -290,7 +432,6 @@ module.exports = async function handler(req, res) {
   clearTimeout(timeout);
 
   if (!geminiRes.ok) {
-    // Log status server-side; never forward raw provider error to the client.
     console.error('Gemini responded with status', geminiRes.status);
     const status = geminiRes.status === 429 ? 429 : 502;
     const msg = status === 429
@@ -309,10 +450,14 @@ module.exports = async function handler(req, res) {
 
   // --- Extract text safely ---
   let text = '';
+  let finishReason = '';
   try {
     const cand = data && data.candidates && data.candidates[0];
-    if (cand && cand.content && Array.isArray(cand.content.parts)) {
-      text = cand.content.parts.map(pt => pt.text || '').join('').trim();
+    if (cand) {
+      finishReason = cand.finishReason || '';
+      if (cand.content && Array.isArray(cand.content.parts)) {
+        text = cand.content.parts.map(function (pt) { return pt.text || ''; }).join('').trim();
+      }
     }
   } catch (e) { text = ''; }
 
@@ -322,6 +467,14 @@ module.exports = async function handler(req, res) {
       reply: "I'm not able to answer that from Roger's portfolio right now. You can explore the sections or contact Roger directly.",
       actions: []
     });
+  }
+
+  // If the model still hit the token ceiling, avoid a hard mid-sentence cut:
+  // trim to the last sentence boundary and add a gentle continuation note.
+  if (finishReason === 'MAX_TOKENS') {
+    const lastStop = Math.max(text.lastIndexOf('. '), text.lastIndexOf('.\n'), text.lastIndexOf('! '), text.lastIndexOf('? '));
+    if (lastStop > 60) text = text.slice(0, lastStop + 1);
+    text = text.trim() + "\n\n(Ask a follow-up if you'd like more detail.)";
   }
 
   const parsed = extractNavigation(text);
