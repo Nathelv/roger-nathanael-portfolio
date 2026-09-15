@@ -491,14 +491,16 @@ function initChatbot() {
     const span = document.createElement('span');
     el.appendChild(span);
     body.appendChild(el); scrollDown();
-    // typing effect
+    // Fast typing effect: reveal several characters per frame so long
+    // answers appear almost instantly while keeping a subtle typing feel.
     let i = 0;
+    const step = Math.max(3, Math.ceil(text.length / 80)); // longer text = bigger chunks
     const caret = document.createElement('span'); caret.className = 'caret';
     el.appendChild(caret);
     (function type() {
       span.textContent = text.slice(0, i);
-      if (i++ <= text.length) { scrollDown(); setTimeout(type, 14); }
-      else { caret.remove(); if (actions && actions.length) renderActions(el, actions); scrollDown(); }
+      if (i < text.length) { i += step; scrollDown(); setTimeout(type, 12); }
+      else { span.textContent = text; caret.remove(); if (actions && actions.length) renderActions(el, actions); scrollDown(); }
     })();
   }
   function renderActions(el, actions) {
@@ -626,8 +628,45 @@ function initChatbot() {
     addBot(text, mapAiActions(aiActions));
   }
 
-  // Main entry: try the AI backend; gracefully fall back to the rule-based
-  // engine on network/API failure so the assistant never hard-fails.
+  // Create an empty bot bubble whose text can be updated live while streaming.
+  // Returns { setText, finalize }. Rendering uses textContent only (safe).
+  function addBotStreaming() {
+    const el = document.createElement('div');
+    el.className = 'msg bot';
+    const span = document.createElement('span');
+    const caret = document.createElement('span'); caret.className = 'caret';
+    el.appendChild(span); el.appendChild(caret);
+    body.appendChild(el); scrollDown();
+    return {
+      setText: function (t) { span.textContent = t; scrollDown(); },
+      finalize: function (t, aiActions) {
+        span.textContent = t;
+        caret.remove();
+        const acts = mapAiActions(aiActions);
+        if (acts.length) renderActions(el, acts);
+        scrollDown();
+      }
+    };
+  }
+
+  // Client-side NAV parser (mirrors the server allowlist). Extracts a
+  // [[NAV:target]] tag from streamed text, returns { reply, actions }.
+  function parseNav(text) {
+    const actions = [];
+    const re = /\[\[NAV:\s*([a-z]+)\s*\]\]/gi;
+    let m;
+    while ((m = re.exec(text)) !== null) {
+      const target = (m[1] || '').toLowerCase();
+      if (SECTION_FILE[target] && !actions.some(function (a) { return a.target === target; })) {
+        actions.push({ type: 'navigate', target: target });
+      }
+    }
+    return { reply: text.replace(re, '').trim(), actions: actions };
+  }
+
+  // Main entry: stream the AI reply so it appears token-by-token.
+  // Falls back to the rule-based engine on network failure, and shows a
+  // friendly message on server/JSON errors.
   async function handle(q) {
     if (busy) return;
     addUser(q);
@@ -642,23 +681,45 @@ function initChatbot() {
         body: JSON.stringify({ message: q, history: history.slice(0, -1) })
       });
 
-      let data = null;
-      try { data = await res.json(); } catch (e) { data = null; }
+      const ctype = (res.headers.get('content-type') || '').toLowerCase();
 
-      typing.remove();
-
-      if (res.ok && data && data.success && typeof data.reply === 'string') {
-        addBotWithActions(data.reply, data.actions);
-        pushHistory('assistant', data.reply);
-      } else if (data && data.error) {
-        addBot(data.error);
-      } else {
-        addBot("I'm having trouble connecting right now. Please try again in a moment.");
+      // Server returned a JSON error (bad request, missing key, rate limit…)
+      if (ctype.indexOf('application/json') !== -1) {
+        let data = null;
+        try { data = await res.json(); } catch (e) { data = null; }
+        typing.remove();
+        addBot((data && data.error) || "I'm having trouble connecting right now. Please try again in a moment.");
+        return;
       }
-    } catch (err) {
-      // Network failure / offline / API not deployed: use local fallback so
-      // the chatbot still helps with navigation.
+
+      // Streamed text/plain response: render live as chunks arrive.
+      if (!res.ok || !res.body) {
+        typing.remove();
+        addBot("I'm having trouble connecting right now. Please try again in a moment.");
+        return;
+      }
+
       typing.remove();
+      const stream = addBotStreaming();
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let full = '';
+
+      while (true) {
+        const chunk = await reader.read();
+        if (chunk.done) break;
+        full += decoder.decode(chunk.value, { stream: true });
+        // Show text as it streams, hiding any NAV tag that's arrived so far.
+        stream.setText(full.replace(/\[\[NAV:[^\]]*\]\]/gi, '').trim());
+      }
+
+      const parsed = parseNav(full.trim());
+      stream.finalize(parsed.reply || full.trim(), parsed.actions);
+      pushHistory('assistant', parsed.reply || full.trim());
+    } catch (err) {
+      // Network failure / offline / API not deployed: local fallback so the
+      // chatbot still helps with navigation.
+      try { typing.remove(); } catch (e) {}
       const r = respond(q);
       addBot(r.text, r.actions);
       pushHistory('assistant', r.text);

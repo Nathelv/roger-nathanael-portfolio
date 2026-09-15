@@ -27,10 +27,13 @@ const NAV_TARGETS = ['home', 'about', 'skills', 'projects', 'experience', 'educa
 
 /* ---- Gemini model + endpoint ----
    NOTE: If the API rejects this model name (e.g. 404 "model not found"),
-   change GEMINI_MODEL to a valid one such as 'gemini-2.5-flash',
-   'gemini-2.0-flash', or 'gemini-1.5-flash'. Only this one line needs editing. */
-const GEMINI_MODEL = 'gemini-3.5-flash';
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/' + GEMINI_MODEL + ':generateContent';
+   change GEMINI_MODEL to a valid one such as 'gemini-2.5-flash' or
+   'gemini-1.5-flash'. gemini-2.0-flash is the fastest for a lightweight
+   portfolio chatbot. Only this one line needs editing. */
+const GEMINI_MODEL = 'gemini-2.0-flash';
+const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models/' + GEMINI_MODEL;
+const GEMINI_URL = GEMINI_BASE + ':generateContent';
+const GEMINI_STREAM_URL = GEMINI_BASE + ':streamGenerateContent?alt=sse';
 
 /* ------------------------------------------------------------
    Build a compact, plain-text knowledge summary from PORTFOLIO.
@@ -405,17 +408,21 @@ module.exports = async function handler(req, res) {
     contents: contents,
     generationConfig: {
       temperature: 0.4,
-      maxOutputTokens: 2048,   // generous headroom so replies are not cut off
+      // Enough for a complete answer, but small enough to keep replies fast.
+      // (The MAX_TOKENS handler below still trims cleanly if it's ever hit.)
+      maxOutputTokens: 800,
       topP: 0.9
     }
   };
 
-  // --- Call Gemini with a timeout ---
+  // --- Call Gemini's STREAMING endpoint (SSE) ---
+  // We stream text chunks straight to the browser so the reply appears
+  // token-by-token instead of after the whole answer is ready.
   const controller = new AbortController();
   const timeout = setTimeout(function () { controller.abort(); }, 25000);
   let geminiRes;
   try {
-    geminiRes = await fetch(GEMINI_URL, {
+    geminiRes = await fetch(GEMINI_STREAM_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -429,9 +436,9 @@ module.exports = async function handler(req, res) {
     console.error('Gemini request failed:', err && err.name);
     return res.status(502).json({ success: false, error: "I'm having trouble connecting right now. Please try again in a moment." });
   }
-  clearTimeout(timeout);
 
-  if (!geminiRes.ok) {
+  if (!geminiRes.ok || !geminiRes.body) {
+    clearTimeout(timeout);
     console.error('Gemini responded with status', geminiRes.status);
     const status = geminiRes.status === 429 ? 429 : 502;
     const msg = status === 429
@@ -440,47 +447,50 @@ module.exports = async function handler(req, res) {
     return res.status(status).json({ success: false, error: msg });
   }
 
-  let data;
-  try {
-    data = await geminiRes.json();
-  } catch (e) {
-    console.error('Failed to parse Gemini response.');
-    return res.status(502).json({ success: false, error: "I couldn't read the response. Please try again." });
-  }
+  // Stream plain UTF-8 text to the client. (NAV tag stays in the text and is
+  // parsed/stripped on the client, which already has the same allowlist.)
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache, no-transform');
 
-  // --- Extract text safely ---
-  let text = '';
-  let finishReason = '';
+  const decoder = new TextDecoder();
+  let buffer = '';
+  let sentAny = false;
+
   try {
-    const cand = data && data.candidates && data.candidates[0];
-    if (cand) {
-      finishReason = cand.finishReason || '';
-      if (cand.content && Array.isArray(cand.content.parts)) {
-        text = cand.content.parts.map(function (pt) { return pt.text || ''; }).join('').trim();
+    const reader = geminiRes.body.getReader();
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const chunk = await reader.read();
+      if (chunk.done) break;
+      buffer += decoder.decode(chunk.value, { stream: true });
+
+      // SSE frames are separated by blank lines; each data line is JSON.
+      let sep;
+      while ((sep = buffer.indexOf('\n')) !== -1) {
+        const line = buffer.slice(0, sep).trim();
+        buffer = buffer.slice(sep + 1);
+        if (!line || line.indexOf('data:') !== 0) continue;
+        const jsonStr = line.slice(5).trim();
+        if (jsonStr === '[DONE]') continue;
+        try {
+          const obj = JSON.parse(jsonStr);
+          const cand = obj && obj.candidates && obj.candidates[0];
+          const parts = cand && cand.content && cand.content.parts;
+          if (Array.isArray(parts)) {
+            const piece = parts.map(function (pt) { return pt.text || ''; }).join('');
+            if (piece) { res.write(piece); sentAny = true; }
+          }
+        } catch (e) { /* ignore partial/non-JSON keep-alive lines */ }
       }
     }
-  } catch (e) { text = ''; }
-
-  if (!text) {
-    return res.status(200).json({
-      success: true,
-      reply: "I'm not able to answer that from Roger's portfolio right now. You can explore the sections or contact Roger directly.",
-      actions: []
-    });
+  } catch (err) {
+    console.error('Gemini stream error:', err && err.name);
+  } finally {
+    clearTimeout(timeout);
+    // Only write a fallback line if the stream produced nothing at all.
+    if (!sentAny) {
+      res.write("I'm not able to answer that from Roger's portfolio right now. You can explore the sections or contact Roger directly.");
+    }
+    res.end();
   }
-
-  // If the model still hit the token ceiling, avoid a hard mid-sentence cut:
-  // trim to the last sentence boundary and add a gentle continuation note.
-  if (finishReason === 'MAX_TOKENS') {
-    const lastStop = Math.max(text.lastIndexOf('. '), text.lastIndexOf('.\n'), text.lastIndexOf('! '), text.lastIndexOf('? '));
-    if (lastStop > 60) text = text.slice(0, lastStop + 1);
-    text = text.trim() + "\n\n(Ask a follow-up if you'd like more detail.)";
-  }
-
-  const parsed = extractNavigation(text);
-  return res.status(200).json({
-    success: true,
-    reply: parsed.reply || text,
-    actions: parsed.actions
-  });
 };
