@@ -55,8 +55,19 @@ function initPreloader() {
     return;
   }
 
+  // Preloader shows the full name with a continuous "loading wave" per letter.
+  // Preloader shows the full name with a continuous "loading wave".
+  // Per-letter --wave-offset staggers both the entrance and the looping wave
+  // so the animation travels across "Roger Nathanael" and repeats.
   const logo = document.getElementById('preLogo');
-  if (logo) logo.innerHTML = 'ROGER'.split('').map((c, i) => `<span style="animation-delay:${i * 0.09}s">${c}</span>`).join('');
+  if (logo) {
+    const NAME = 'Roger Nathanael';
+    logo.innerHTML = NAME.split('').map(function (c, i) {
+      if (c === ' ') return '<span class="pre-space">&nbsp;</span>';
+      var off = (i * 0.08).toFixed(2);
+      return '<span style="--wave-offset:' + off + 's; animation-delay:' + off + 's, calc(0.5s + ' + off + 's)">' + c + '</span>';
+    }).join('');
+  }
 
   let started = false;
   function reveal() {
@@ -336,24 +347,33 @@ function initPagerLinks() {
    been idle for a few seconds, and disappears as soon as they scroll again.
    Skipped on the last page since there's nowhere further to scroll. */
 function initIdleScrollHint() {
-  if (!isDeckPage()) return; // no scroll-hint on detail pages
+  if (!isDeckPage()) return;            // no scroll-hint on detail pages
   const idx = currentIndex();
-  const isHome = idx === 0;
   const isLast = idx >= PAGES.length - 1;
-  if (isHome || isLast) return; // Home has a static one; last page has no next
+  if (isLast) return;                   // last page has nowhere further to scroll
 
+  // The hint floats next to the cursor and blinks (appear / pause / appear).
   const hint = document.createElement('div');
-  hint.className = 'scroll-hint idle';
-  hint.innerHTML = '<div class="mouse"></div>SCROLL TO CONTINUE';
+  hint.className = 'scroll-hint cursor-follow';
+  hint.innerHTML = '<span class="mouse"></span><span class="scroll-hint-label">Scroll to continue</span>';
   document.body.appendChild(hint);
 
-  const IDLE_MS = 2500;
+  const IDLE_MS = 1800;
   let idleTimer = null;
+  let px = window.innerWidth / 2, py = window.innerHeight / 2;
 
+  function place() {
+    // Offset a little below-right of the pointer; clamp to viewport.
+    let x = px + 18, y = py + 20;
+    const w = hint.offsetWidth || 150, h = hint.offsetHeight || 40;
+    if (x + w > window.innerWidth - 8) x = px - w - 18;
+    if (y + h > window.innerHeight - 8) y = py - h - 18;
+    hint.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+  }
   function scheduleShow() {
     clearTimeout(idleTimer);
-    idleTimer = setTimeout(() => {
-      if (!navigating) hint.classList.add('show');
+    idleTimer = setTimeout(function () {
+      if (!navigating) { place(); hint.classList.add('show'); }
     }, IDLE_MS);
   }
   function onActivity() {
@@ -361,10 +381,16 @@ function initIdleScrollHint() {
     scheduleShow();
   }
 
-  // Tied to scroll-intent only (not mouse move), so it reflects "not scrolling".
-  ['wheel', 'touchmove', 'scroll', 'keydown'].forEach(ev =>
-    window.addEventListener(ev, onActivity, { passive: true })
-  );
+  // Follow the pointer while visible; keep re-arming the idle timer on scroll.
+  window.addEventListener('mousemove', function (e) {
+    px = e.clientX; py = e.clientY;
+    if (hint.classList.contains('show')) place();
+  }, { passive: true });
+
+  // Any scroll intent hides it and restarts the idle countdown.
+  ['wheel', 'touchmove', 'scroll', 'keydown'].forEach(function (ev) {
+    window.addEventListener(ev, onActivity, { passive: true });
+  });
 
   scheduleShow(); // start the idle countdown on load
 }
@@ -503,14 +529,25 @@ function initChatbot() {
       else { span.textContent = text; caret.remove(); if (actions && actions.length) renderActions(el, actions); scrollDown(); }
     })();
   }
+  // Actions are stored as serializable descriptors { label, kind, value }:
+  //   kind 'nav' -> value is a page file (navTo);  kind 'ext' -> value is a URL.
+  // This lets us persist buttons and rebuild them after navigation.
+  function runDescriptor(a) {
+    if (a.kind === 'nav') return navTo(a.value);
+    if (a.kind === 'ext') return openExternal(a.value);
+  }
   function renderActions(el, actions) {
+    if (!actions || !actions.length) return;
     const wrap = document.createElement('div');
     wrap.className = 'msg-actions';
     actions.forEach(a => {
       const b = document.createElement('button');
       b.className = 'chip-btn';
-      b.innerHTML = `${a.label} ${ARROW}`;
-      b.addEventListener('click', a.run);
+      const label = document.createElement('span');
+      label.textContent = a.label + ' ';   // label via textContent (safe)
+      b.appendChild(label);
+      b.insertAdjacentHTML('beforeend', ARROW);
+      b.addEventListener('click', () => runDescriptor(a));
       wrap.appendChild(b);
     });
     el.appendChild(wrap);
@@ -607,7 +644,7 @@ function initChatbot() {
   }
 
   // --- Conversation state ---
-  const history = [];              // {role:'user'|'assistant', content}
+  const history = [];              // {role:'user'|'assistant', content}  (AI context)
   const MAX_HISTORY = 8;           // keep small to limit tokens
   let busy = false;                // prevents concurrent/duplicate sends
   const sendBtn = form ? form.querySelector('.chat-send') : null;
@@ -615,6 +652,33 @@ function initChatbot() {
   function pushHistory(role, content) {
     history.push({ role: role, content: content });
     while (history.length > MAX_HISTORY) history.shift();
+  }
+
+  /* ---------- Persistence across page navigation ----------
+     The site is multi-page, so each page reload rebuilds the chatbot.
+     We persist the visible transcript + AI history in sessionStorage so the
+     conversation survives navigation within the same browser tab/session. */
+  const STORE_KEY = 'rn-chat';         // { transcript, history, open, greeted }
+  const MAX_TRANSCRIPT = 40;           // cap stored messages
+  let transcript = [];                 // [{ role:'user'|'bot', text, actions:[{label,kind,value}] }]
+
+  function loadStore() {
+    try { return JSON.parse(sessionStorage.getItem(STORE_KEY)) || {}; }
+    catch (e) { return {}; }
+  }
+  function saveStore(patch) {
+    try {
+      const cur = loadStore();
+      const next = Object.assign(cur, patch || {});
+      next.transcript = transcript.slice(-MAX_TRANSCRIPT);
+      next.history = history.slice(-MAX_HISTORY);
+      sessionStorage.setItem(STORE_KEY, JSON.stringify(next));
+    } catch (e) { /* storage full/unavailable: ignore, chat still works */ }
+  }
+  function recordMessage(role, text, actions) {
+    transcript.push({ role: role, text: text, actions: actions || [] });
+    if (transcript.length > MAX_TRANSCRIPT) transcript.shift();
+    saveStore();
   }
   function setBusy(state) {
     busy = state;
@@ -774,6 +838,44 @@ function initChatbot() {
   setTimeout(() => { if (!document.body.classList.contains('chat-open')) fab.classList.add('has-unread'); }, 3200);
 }
 
+/* ---------- Cursor glow ----------
+   A soft glow that follows the pointer. Disabled for touch/coarse pointers
+   and when the user prefers reduced motion. */
+function initCursorGlow() {
+  if (window.matchMedia) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (window.matchMedia('(pointer: coarse)').matches) return; // skip on touch
+  }
+  const glow = document.createElement('div');
+  glow.className = 'cursor-glow';
+  document.body.appendChild(glow);
+
+  let x = window.innerWidth / 2, y = window.innerHeight / 2;
+  let gx = x, gy = y, raf = null;
+
+  function tick() {
+    gx += (x - gx) * 0.18;
+    gy += (y - gy) * 0.18;
+    glow.style.transform = 'translate(' + gx.toFixed(1) + 'px,' + gy.toFixed(1) + 'px)';
+    if (Math.abs(x - gx) > 0.3 || Math.abs(y - gy) > 0.3) raf = requestAnimationFrame(tick);
+    else raf = null;
+  }
+  window.addEventListener('mousemove', function (e) {
+    x = e.clientX; y = e.clientY;
+    glow.classList.add('on');
+    if (!raf) raf = requestAnimationFrame(tick);
+  }, { passive: true });
+  window.addEventListener('mouseout', function (e) {
+    if (!e.relatedTarget) glow.classList.remove('on'); // left the window
+  });
+  // Brighten on interactive targets.
+  document.addEventListener('mouseover', function (e) {
+    const t = e.target;
+    const interactive = t.closest && t.closest('a, button, .project-card, .chip-btn, input, .chat-fab');
+    glow.classList.toggle('hot', !!interactive);
+  });
+}
+
 /* ---------- Init ---------- */
 document.addEventListener('DOMContentLoaded', () => {
   buildTransitionDom();
@@ -788,4 +890,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initIdleScrollHint();
   initPageDecor();
   initChatbot();
+  initCursorGlow();
 });
