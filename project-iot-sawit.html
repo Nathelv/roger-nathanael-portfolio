@@ -13,6 +13,15 @@
     if (sessionStorage.getItem('rn-loaded') || sessionStorage.getItem('rn-transition')) {
       document.documentElement.classList.add('no-preloader');
     }
+    // Arrived via a project card zoom / project-to-project slide: cover the
+    // page synchronously (before first paint) so there's no blink; the cover
+    // is animated away by js/main.js once the page is ready.
+    try {
+      var _pf = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+      if (sessionStorage.getItem('rn-proj-enter') === _pf) {
+        document.documentElement.classList.add('no-preloader', 'proj-covering');
+      }
+    } catch (e) {}
   </script>
 </head>
 <body class="loading detail-body">
@@ -61,60 +70,67 @@
         <p class="lead">An IoT-based smart plantation solution designed to support monitoring and decision-making in palm plantation management.</p>
         <div class="detail-meta">
           <div class="meta"><span class="k">Project Type</span><span class="v">Academic Group Project</span></div>
-          <div class="meta"><span class="k">Course</span><span class="v">Smart Application</span></div>
-          <div class="meta"><span class="k">Role</span><span class="v">Team Member</span></div>
+          <div class="meta"><span class="k">Course</span><span class="v">Smart Apps · Semester 4 (Even 2025/2026)</span></div>
+          <div class="meta"><span class="k">Team</span><span class="v">6 members</span></div>
+          <div class="meta"><span class="k">Role</span><span class="v">Project Initiator / AI Integration Contributor</span></div>
           <div class="meta win"><span class="k">Achievement</span><span class="v">🏆 1st Place</span></div>
         </div>
       </header>
 
       <section class="detail-block">
         <h2>The Problem</h2>
-        <p>Palm plantation management often relies on manual monitoring, which makes it hard to track conditions consistently and to make timely, data-informed decisions across a large area.</p>
-        <span class="fill-note">✎ Sesuaikan dengan masalah asli yang kalian angkat.</span>
+        <p>Maintaining plants is easier when their conditions are tracked consistently and watering can be automated — and when the raw sensor data is turned into something a person can actually understand and act on. Palm oil plantations were used as the example use case.</p>
       </section>
 
       <section class="detail-block">
         <h2>The Solution</h2>
-        <p>We designed an IoT-based system combining sensor-based monitoring with technology-driven analysis to give clearer, real-time insight for plantation management and decision-making.</p>
-        <span class="fill-note">✎ Sesuaikan dengan detail solusi yang kalian bangun.</span>
+        <p>An IoT plant-monitoring system that reads soil moisture and air humidity, supports automated watering, and uses generative AI to turn the sensor data into natural-language summaries and recommendations — for example, when watering may be needed and what the plant may lack.</p>
       </section>
 
       <section class="detail-block highlight">
         <h2>My Contribution</h2>
-        <p>Contributed to the development and integration of the IoT-based monitoring concept and supported the team in designing the overall solution.</p>
-        <span class="fill-note">✎ Ganti dengan kontribusi ASLI kamu sendiri (bagian spesifik yang kamu kerjakan, bukan tim).</span>
+        <p>I initiated the plant-monitoring system concept and proposed introducing AI into the project. I contributed to the AI integration, reviewed teammates' code and results, and took part in testing and integration.</p>
+      </section>
+
+      <section class="detail-block">
+        <h2>Main Features</h2>
+        <ul>
+          <li>Soil moisture detection at intervals</li>
+          <li>Air humidity detection</li>
+          <li>Automated watering system</li>
+          <li>Generative AI summary and recommendation based on the sensor data</li>
+        </ul>
       </section>
 
       <section class="detail-block">
         <h2>Technology</h2>
-        <div class="tags"><span>IoT</span><span>Sensors</span><span>Microcontroller</span><span>Technology-driven Monitoring</span></div>
+        <div class="tags"><span>ESP32</span><span>DHT11</span><span>Soil Hygrometer</span><span>5V 2-Channel Relay</span><span>LCD1602</span><span>I2C Module</span><span>Blynk API</span><span>Gemini API</span></div>
       </section>
 
       <section class="detail-block">
         <h2>Process</h2>
         <div class="process-flow">
-          <span class="step">Research</span><span class="arrow">→</span>
-          <span class="step">Problem Identification</span><span class="arrow">→</span>
-          <span class="step">Ideation</span><span class="arrow">→</span>
+          <span class="step">Concept &amp; Ideation</span><span class="arrow">→</span>
           <span class="step">Development</span><span class="arrow">→</span>
-          <span class="step">Testing</span><span class="arrow">→</span>
-          <span class="step">Presentation</span>
+          <span class="step">Code Review</span><span class="arrow">→</span>
+          <span class="step">Integration</span><span class="arrow">→</span>
+          <span class="step">Testing</span>
         </div>
+        <p class="detail-note">The main challenge was integrating the hardware and software, which took extensive trial and error. We solved it through collaborative testing and code review across the team.</p>
       </section>
 
       <section class="detail-block">
         <h2>Outcome</h2>
-        <p>The project achieved <strong>1st Place</strong> in the Smart Application project.</p>
+        <p>A working prototype was successfully operated and produced the expected data, and the project achieved <strong>1st Place</strong> in the Smart Application project.</p>
       </section>
 
       <section class="detail-block">
         <h2>What I Learned</h2>
         <ul>
-          <li>[ISI] Poin pembelajaran teknis (mis. cara kerja sensor/IoT).</li>
-          <li>[ISI] Poin soal kolaborasi tim / manajemen waktu.</li>
-          <li>[ISI] Poin soal menghubungkan teknologi dengan kebutuhan nyata.</li>
+          <li>How sensors and a microcontroller work together to capture real-world data (soil moisture, air humidity) and drive automated actions like watering.</li>
+          <li>How generative AI can turn raw sensor readings into clear, human-readable summaries and recommendations.</li>
+          <li>How to collaborate, review teammates' work, and integrate hardware with software under real project constraints.</li>
         </ul>
-        <span class="fill-note">✎ Ganti 3 poin di atas dengan pembelajaran asli kamu.</span>
       </section>
 
       <section class="detail-block">
@@ -127,7 +143,6 @@
           <div class="gallery-item">Team photo</div>
           <div class="gallery-item">Competition result</div>
         </div>
-        <span class="fill-note">✎ Ganti kotak ini dengan gambar asli: taruh file di folder assets lalu ganti tiap .gallery-item dengan &lt;img&gt;.</span>
       </section>
     </div>
   </main>

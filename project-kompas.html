@@ -13,6 +13,12 @@
     if (sessionStorage.getItem('rn-loaded') || sessionStorage.getItem('rn-transition')) {
       document.documentElement.classList.add('no-preloader');
     }
+    try {
+      var _pf = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+      if (sessionStorage.getItem('rn-proj-enter') === _pf) {
+        document.documentElement.classList.add('no-preloader', 'proj-covering');
+      }
+    } catch (e) {}
   </script>
 </head>
 <body class="loading detail-body">
@@ -60,38 +66,36 @@
         <h1>KOMPAS</h1>
         <p class="lead">An academic project management platform designed to help students and lecturers manage academic projects.</p>
         <div class="detail-meta">
-          <div class="meta"><span class="k">Project Type</span><span class="v">Academic Project</span></div>
-          <div class="meta"><span class="k">Course</span><span class="v">IS Project Management</span></div>
-          <div class="meta"><span class="k">Role</span><span class="v">Team Member</span></div>
-          <div class="meta"><span class="k">Method</span><span class="v">Agile Scrum</span></div>
+          <div class="meta"><span class="k">Project Type</span><span class="v">Academic Group Project</span></div>
+          <div class="meta"><span class="k">Course</span><span class="v">Information Systems Project Management (ISPM)</span></div>
+          <div class="meta"><span class="k">Period</span><span class="v">January – June 2026 · 7 members</span></div>
+          <div class="meta"><span class="k">Role</span><span class="v">Business Analyst / Secretary</span></div>
         </div>
       </header>
 
       <section class="detail-block">
         <h2>The Problem</h2>
-        <p>Managing academic projects between students and lecturers can be scattered and hard to track without a shared, organized system.</p>
-        <span class="fill-note">✎ Sesuaikan dengan masalah asli yang kalian angkat.</span>
+        <p>For BINUS students, academic work is spread across individual tasks, group projects, and exam schedules — and it's hard to track in one place. Lecturers also have limited visibility into each student's individual contribution within group work.</p>
       </section>
 
       <section class="detail-block">
         <h2>The Solution</h2>
-        <p>A platform that centralizes academic project management, helping students and lecturers plan, track, and coordinate their work.</p>
-        <span class="fill-note">✎ Sesuaikan dengan fitur asli platform.</span>
+        <p>KOMPAS is a concept for a web-based academic project management platform for BINUS students. It provides a unified dashboard to track Daily Tasks, Group Projects, and Exam Schedules, uses Kanban boards with Agile Scrum, enables real-time collaboration, and improves lecturer visibility into individual contributions.</p>
       </section>
 
       <section class="detail-block highlight">
         <h2>My Contribution</h2>
-        <p>Contributed to planning and managing the project using Agile Scrum, and supported the design of the information system.</p>
-        <span class="fill-note">✎ Ganti dengan kontribusi ASLI kamu (mis. peran Scrum, analisis kebutuhan, dokumentasi, fitur tertentu).</span>
+        <p>As Business Analyst / Secretary, I focused on business analysis, project documentation, coordination, requirements and project-planning support, and secretary responsibilities.</p>
       </section>
 
       <section class="detail-block">
-        <h2>Approach</h2>
-        <div class="tags"><span>Project Management</span><span>Information Systems</span><span>Agile Scrum</span><span>Requirement Analysis</span></div>
+        <h2>Project Management Activities</h2>
+        <div class="tags"><span>Project Charter</span><span>Work Breakdown Structure</span><span>Project Scheduling</span><span>Gantt Chart</span><span>Critical Path</span><span>Risk Management</span><span>Procurement Management</span><span>Quality Assurance</span><span>Documentation</span></div>
       </section>
 
       <section class="detail-block">
-        <h2>Process</h2>
+        <h2>Methodology</h2>
+        <p>Agile Scrum with 2-week sprints. Risk management identified 35 risks, including Scope Creep, Critical Defects at Late Stage, Real-Time Sync Failure, Sprint Schedule Delay, and Academic Data Security Breach. The concept also planned real-time synchronization using WebSocket.</p>
         <div class="process-flow">
           <span class="step">Requirement</span><span class="arrow">→</span>
           <span class="step">Planning</span><span class="arrow">→</span>
@@ -102,19 +106,18 @@
       </section>
 
       <section class="detail-block">
-        <h2>Outcome</h2>
-        <p>A structured concept/platform for managing academic projects, applying project management principles in an information systems context.</p>
-        <span class="fill-note">✎ Tambahkan hasil/nilai jika ada.</span>
+        <h2>Business Case</h2>
+        <p>The project's business case projected an initial investment of Rp 15,000,000, an approximate 5-year ROI of 451%, and a payback period of 1.5 years.</p>
+        <p class="detail-note">These are business-case projections for the project, not realized financial results.</p>
       </section>
 
       <section class="detail-block">
         <h2>What I Learned</h2>
         <ul>
-          <li>[ISI] Poin soal metode Agile Scrum.</li>
-          <li>[ISI] Poin soal analisis kebutuhan sistem informasi.</li>
-          <li>[ISI] Poin soal koordinasi tim.</li>
+          <li>How Agile Scrum organizes work into sprints and keeps a team coordinated.</li>
+          <li>Business analysis and requirements/project planning — from Project Charter and WBS to scheduling, risk, and quality management.</li>
+          <li>Documentation and coordination as the backbone that keeps a project team aligned.</li>
         </ul>
-        <span class="fill-note">✎ Ganti 3 poin di atas dengan pembelajaran asli kamu.</span>
       </section>
 
       <section class="detail-block">
@@ -123,11 +126,10 @@
           <div class="gallery-item">Dashboard UI</div>
           <div class="gallery-item">System diagram</div>
           <div class="gallery-item">Scrum board</div>
-          <div class="gallery-item">Use case</div>
+          <div class="gallery-item">Gantt chart</div>
           <div class="gallery-item">Presentation</div>
           <div class="gallery-item">Team photo</div>
         </div>
-        <span class="fill-note">✎ Ganti kotak ini dengan gambar asli.</span>
       </section>
     </div>
   </main>

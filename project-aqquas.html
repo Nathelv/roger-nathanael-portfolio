@@ -13,6 +13,12 @@
     if (sessionStorage.getItem('rn-loaded') || sessionStorage.getItem('rn-transition')) {
       document.documentElement.classList.add('no-preloader');
     }
+    try {
+      var _pf = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+      if (sessionStorage.getItem('rn-proj-enter') === _pf) {
+        document.documentElement.classList.add('no-preloader', 'proj-covering');
+      }
+    } catch (e) {}
   </script>
 </head>
 <body class="loading detail-body">
@@ -60,75 +66,78 @@
         <h1>Aqquas</h1>
         <p class="lead">A digital product concept for freshwater and saltwater fish hobbyists, developed through user research and UX design processes.</p>
         <div class="detail-meta">
-          <div class="meta"><span class="k">Project Type</span><span class="v">Academic Project</span></div>
-          <div class="meta"><span class="k">Course</span><span class="v">User Research &amp; Design</span></div>
-          <div class="meta"><span class="k">Role</span><span class="v">UX Designer</span></div>
-          <div class="meta"><span class="k">Focus</span><span class="v">User-Centered Design</span></div>
+          <div class="meta"><span class="k">Project Type</span><span class="v">Academic Group Project</span></div>
+          <div class="meta"><span class="k">Course</span><span class="v">User Research &amp; Design · Semester 1 (Odd 2024/2025)</span></div>
+          <div class="meta"><span class="k">Team</span><span class="v">2 members</span></div>
+          <div class="meta"><span class="k">Role</span><span class="v">Design process contributor</span></div>
         </div>
       </header>
 
       <section class="detail-block">
-        <h2>The Problem</h2>
-        <p>Fish hobbyists lack a focused digital tool that fits their routines and needs when caring for freshwater and saltwater fish.</p>
-        <span class="fill-note">✎ Sesuaikan dengan masalah asli yang kalian angkat.</span>
+        <h2>The Case</h2>
+        <p>A digital product concept for freshwater and saltwater fish hobbyists. The case was provided by the campus, and we developed it into a product concept and prototype.</p>
       </section>
 
       <section class="detail-block">
         <h2>The Solution</h2>
-        <p>A product concept designed around real user needs, developed through user persona, user journey, task flow, wireframe, navigation map, and component style.</p>
-        <span class="fill-note">✎ Sesuaikan bila perlu.</span>
+        <p>Starting from the provided case, we shaped a product concept and built it out through layouts, wireframes, and a prototype — covering the core screens: Home, Video, Shop, Forum, and Profile.</p>
       </section>
 
       <section class="detail-block highlight">
         <h2>My Contribution</h2>
-        <p>Contributed to the user research and UX design process, helping shape the product concept from user needs to wireframes.</p>
-        <span class="fill-note">✎ Ganti dengan kontribusi ASLI kamu (mis. bikin persona, wireframe layar tertentu, user journey).</span>
+        <p>I participated across the project and design process, from developing the concept through to prototyping.</p>
       </section>
 
       <section class="detail-block">
-        <h2>Deliverables</h2>
-        <div class="tags"><span>User Persona</span><span>User Journey</span><span>Task Flow</span><span>Wireframe</span><span>Navigation Map</span><span>Component Style</span></div>
+        <h2>Main Screens</h2>
+        <div class="tags"><span>Home</span><span>Video</span><span>Shop</span><span>Forum</span><span>Profile</span></div>
+      </section>
+
+      <section class="detail-block">
+        <h2>Tools</h2>
+        <div class="tags"><span>Figma</span><span>Canva</span></div>
       </section>
 
       <section class="detail-block">
         <h2>Process</h2>
         <div class="process-flow">
-          <span class="step">User Research</span><span class="arrow">→</span>
-          <span class="step">Persona</span><span class="arrow">→</span>
-          <span class="step">User Journey</span><span class="arrow">→</span>
-          <span class="step">Task Flow</span><span class="arrow">→</span>
-          <span class="step">Wireframe</span><span class="arrow">→</span>
-          <span class="step">Prototype</span>
+          <span class="step">Understand the Case</span><span class="arrow">→</span>
+          <span class="step">Concept</span><span class="arrow">→</span>
+          <span class="step">Layout &amp; Wireframe</span><span class="arrow">→</span>
+          <span class="step">Prototype</span><span class="arrow">→</span>
+          <span class="step">Iteration</span>
         </div>
       </section>
 
       <section class="detail-block">
         <h2>Outcome</h2>
-        <p>A user-centered product concept that strengthened my understanding of design thinking and product development.</p>
-        <span class="fill-note">✎ Tambahkan hasil/feedback jika ada.</span>
+        <p>We successfully created the prototype for the product concept.</p>
       </section>
 
       <section class="detail-block">
         <h2>What I Learned</h2>
         <ul>
-          <li>[ISI] Poin soal proses riset pengguna.</li>
-          <li>[ISI] Poin soal menerjemahkan kebutuhan jadi desain.</li>
-          <li>[ISI] Poin soal tools desain (mis. Figma).</li>
+          <li>UX research concepts and the principles of user-centered design.</li>
+          <li>Translating a concept into UI design, wireframes, and an interactive prototype.</li>
+          <li>Working with design tools (Figma, Canva) and collaborating within a small team.</li>
         </ul>
-        <span class="fill-note">✎ Ganti 3 poin di atas dengan pembelajaran asli kamu.</span>
+      </section>
+
+      <section class="detail-block">
+        <h2>Links</h2>
+        <div class="detail-links"><a href="https://www.figma.com/design/zfz1muUuciCpyDbQZ02i2c/Kel-8-Aqquas?node-id=0-1&amp;t=AKGGoeojSuLo9Tc1-1" target="_blank" rel="noopener">Figma Design ↗</a></div>
       </section>
 
       <section class="detail-block">
         <h2>Gallery</h2>
         <div class="gallery-grid">
-          <div class="gallery-item">Persona</div>
-          <div class="gallery-item">User journey</div>
-          <div class="gallery-item">Task flow</div>
+          <div class="gallery-item">Home screen</div>
+          <div class="gallery-item">Video</div>
+          <div class="gallery-item">Shop</div>
+          <div class="gallery-item">Forum</div>
+          <div class="gallery-item">Profile</div>
           <div class="gallery-item">Wireframe</div>
-          <div class="gallery-item">Navigation map</div>
-          <div class="gallery-item">UI mockup</div>
         </div>
-        <span class="fill-note">✎ Ganti kotak ini dengan gambar asli (screenshot Figma sangat cocok di sini).</span>
       </section>
     </div>
   </main>

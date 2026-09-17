@@ -13,6 +13,12 @@
     if (sessionStorage.getItem('rn-loaded') || sessionStorage.getItem('rn-transition')) {
       document.documentElement.classList.add('no-preloader');
     }
+    try {
+      var _pf = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+      if (sessionStorage.getItem('rn-proj-enter') === _pf) {
+        document.documentElement.classList.add('no-preloader', 'proj-covering');
+      }
+    } catch (e) {}
   </script>
 </head>
 <body class="loading detail-body">
@@ -60,62 +66,71 @@
         <h1>HealthyLife Hub</h1>
         <p class="lead">A web-based health education and monitoring platform that combines application functionality with structured data.</p>
         <div class="detail-meta">
-          <div class="meta"><span class="k">Project Type</span><span class="v">Academic Project</span></div>
-          <div class="meta"><span class="k">Course</span><span class="v">Programming for Business</span></div>
-          <div class="meta"><span class="k">Role</span><span class="v">Team Member</span></div>
-          <div class="meta"><span class="k">Focus</span><span class="v">Web &amp; Data</span></div>
+          <div class="meta"><span class="k">Project Type</span><span class="v">Academic Group Project</span></div>
+          <div class="meta"><span class="k">Course</span><span class="v">Programming for Business · Semester 3 (Odd 2025/2026)</span></div>
+          <div class="meta"><span class="k">Team</span><span class="v">6 members</span></div>
+          <div class="meta"><span class="k">Role</span><span class="v">AI Chatbot &amp; Login; several pages</span></div>
         </div>
       </header>
 
       <section class="detail-block">
         <h2>The Problem</h2>
-        <p>People need an accessible way to learn about healthy living and keep track of health-related information in one organized place.</p>
-        <span class="fill-note">✎ Sesuaikan dengan masalah asli yang kalian angkat.</span>
+        <p>People need an accessible way to learn about healthy living and get quick answers to their health questions in one organized place, rather than scattered across sources.</p>
       </section>
 
       <section class="detail-block">
         <h2>The Solution</h2>
-        <p>We built a web platform with user-oriented features for health education and monitoring, connecting the application functionality to a structured database.</p>
-        <span class="fill-note">✎ Sesuaikan dengan detail solusi yang kalian bangun.</span>
+        <p>A web-based health education and monitoring platform offering articles, a health quiz for logged-in users, and an AI chatbot that answers health-related questions within defined constraints, plus admin tools to manage article content. The AI chatbot flow is: PHP → Gemini API → AI response → Chatbot UI.</p>
       </section>
 
       <section class="detail-block highlight">
         <h2>My Contribution</h2>
-        <p>Contributed to building application features and connecting them with the structured data behind the platform.</p>
-        <span class="fill-note">✎ Ganti dengan kontribusi ASLI kamu (mis. bagian front-end tertentu, query database, fitur X).</span>
+        <p>I implemented the AI chatbot and the login functionality, and worked on several pages of the website.</p>
+      </section>
+
+      <section class="detail-block">
+        <h2>Main Features</h2>
+        <ul>
+          <li>User Login &amp; Admin Login</li>
+          <li>Articles &amp; Admin Article Management</li>
+          <li>Health Quiz (restricted to logged-in users) &amp; Quiz Result</li>
+          <li>AI Chatbot for health-related questions</li>
+        </ul>
       </section>
 
       <section class="detail-block">
         <h2>Technology</h2>
-        <div class="tags"><span>Web Development</span><span>PHP</span><span>MySQL</span><span>Database Design</span></div>
+        <div class="tags"><span>HTML</span><span>CSS</span><span>JavaScript</span><span>PHP</span><span>MySQL</span><span>XAMPP</span><span>Gemini API</span><span>Visual Studio Code</span></div>
       </section>
 
       <section class="detail-block">
         <h2>Process</h2>
         <div class="process-flow">
-          <span class="step">Requirement</span><span class="arrow">→</span>
-          <span class="step">Data Modelling</span><span class="arrow">→</span>
-          <span class="step">Development</span><span class="arrow">→</span>
-          <span class="step">Integration</span><span class="arrow">→</span>
-          <span class="step">Testing</span><span class="arrow">→</span>
-          <span class="step">Presentation</span>
+          <span class="step">Concept</span><span class="arrow">→</span>
+          <span class="step">Layout &amp; Design</span><span class="arrow">→</span>
+          <span class="step">Coding</span><span class="arrow">→</span>
+          <span class="step">Trial &amp; Error Testing</span>
         </div>
+        <p class="detail-note">The main challenge was CSS styling and layout, solved through iterative trial and error and adjustment.</p>
       </section>
 
       <section class="detail-block">
         <h2>Outcome</h2>
-        <p>A working web-based platform demonstrating how application features connect with structured data.</p>
-        <span class="fill-note">✎ Tambahkan hasil/nilai/feedback jika ada.</span>
+        <p>Core functionality was successfully implemented, including the AI chatbot, login, quiz, and admin article management — though article content was still incomplete.</p>
       </section>
 
       <section class="detail-block">
         <h2>What I Learned</h2>
         <ul>
-          <li>[ISI] Poin soal menghubungkan aplikasi dengan database.</li>
-          <li>[ISI] Poin soal merancang fitur yang berorientasi pengguna.</li>
-          <li>[ISI] Poin soal kerja tim / pembagian tugas.</li>
+          <li>How to integrate an external API (Gemini) into a PHP web application.</li>
+          <li>How to bring AI into a product feature — routing user questions to the model and returning safe, useful answers.</li>
+          <li>Teamwork and coordinating shared work across a multi-page website.</li>
         </ul>
-        <span class="fill-note">✎ Ganti 3 poin di atas dengan pembelajaran asli kamu.</span>
+      </section>
+
+      <section class="detail-block">
+        <h2>Links</h2>
+        <div class="detail-links"><a href="https://github.com/Nathelv/HealthyLife-Hub" target="_blank" rel="noopener">GitHub Repository ↗</a></div>
       </section>
 
       <section class="detail-block">
@@ -128,7 +143,6 @@
           <div class="gallery-item">Presentation</div>
           <div class="gallery-item">Team photo</div>
         </div>
-        <span class="fill-note">✎ Ganti kotak ini dengan gambar asli.</span>
       </section>
     </div>
   </main>

@@ -272,6 +272,23 @@ body.ready .reveal { opacity: 1; transform: none; filter: none; }
 .contact-info a:hover { color: var(--accent-cyan); }
 .foot { margin-top: 2rem; color: var(--text-muted); font-size: 0.8rem; }
 
+/* ===================== DETAIL-PAGE NAV (Projects sub-nav) =====================
+   On project detail pages the main menu is swapped for a Projects sub-nav
+   (built in js/main.js -> initDetailNav). Names are longer, so tighten it. */
+/* Match the MAIN nav font size (inherits .nav-links a) and keep everything on
+   ONE line: never wrap, and let the ".4.1" numbers show at their normal size. */
+body.is-detail-nav .nav-links { flex-wrap: nowrap; }
+body.is-detail-nav .nav-links li { flex-shrink: 0; }
+body.is-detail-nav .nav-links a { white-space: nowrap; }
+/* On tighter widths, reclaim space from the logo subtitle before shrinking
+   anything, so the sub-nav stays a single line. */
+@media (max-width: 1280px) {
+  body.is-detail-nav .logo .logo-role { display: none; }
+  body.is-detail-nav .nav-links li:not(:last-child)::after { width: 12px; margin: 0 0.25rem; }
+  /* keep the 4.1 / 4.2 … numbers visible on detail nav (main nav hides .idx here) */
+  body.is-detail-nav .nav-links a .idx { display: inline; }
+}
+
 /* ===================== CURSOR GLOW ===================== */
 .cursor-glow {
   position: fixed; top: 0; left: 0; z-index: 9998;
@@ -665,6 +682,17 @@ body.tr-blocks.entering #transition .cols span:nth-child(1) { animation-delay: 0
   padding: 6.5rem 0 3rem;   /* clear the fixed header */
   background: var(--midnight-900);
 }
+/* Hide the later scenes BEFORE JS/GSAP runs so there's no flash of stacked
+   content on load. Scene 1 (About Me) stays visible as the entry scene.
+   GSAP takes over these with autoAlpha; the static fallback re-shows them. */
+.about-stage .scene-transition,
+.about-stage .scene-journey-head,
+.about-stage .scene-chapter,
+.about-stage .scene-quote { visibility: hidden; opacity: 0; }
+/* Also pre-hide the About sub-elements that GSAP reveals, so nothing flashes
+   fully-visible before the timeline initialises. (Fallback re-shows them.) */
+.about-stage .scene-about .about-line,
+.about-stage .scene-about .kpi { opacity: 0; }
 .about-stage .scene-inner { width: min(1100px, 88%); margin: 0 auto; }
 
 /* Scene 1: About Me */
@@ -756,10 +784,10 @@ body.tr-blocks.entering #transition .cols span:nth-child(1) { animation-delay: 0
    Un-pin and show every scene as a normal readable vertical flow. */
 .about-stage.about-static .stage-fixed { height: auto; overflow: visible; }
 .about-stage.about-static .scene {
-  position: relative; inset: auto; opacity: 1 !important;
+  position: relative; inset: auto; opacity: 1 !important; visibility: visible !important;
   min-height: auto; padding: 4rem 0;
 }
-.about-stage.about-static .scene * { opacity: 1 !important; transform: none !important; }
+.about-stage.about-static .scene * { opacity: 1 !important; visibility: visible !important; transform: none !important; }
 .about-stage.about-static .jchapter,
 .about-stage.about-static .scene-about .about-grid {
   /* keep grids but allow stacking on the fallback */
@@ -839,13 +867,20 @@ body.tr-blocks.entering #transition .cols span:nth-child(1) { animation-delay: 0
 .detail-body { overflow-y: auto; }
 .detail-main { position: relative; z-index: 1; padding-top: 6.5rem; padding-bottom: 5rem; }
 
+/* Back to Projects — fixed at the TOP-LEFT (just below the header), follows scroll. */
 .detail-back {
+  position: fixed; left: 18px; top: 78px; z-index: 90;
   display: inline-flex; align-items: center; gap: 0.5rem;
-  color: var(--text-secondary); font-weight: 600; font-size: 0.9rem;
-  margin-bottom: 1.6rem; transition: var(--transition);
+  color: var(--text-secondary); font-weight: 600; font-size: 0.85rem;
+  background: rgba(8, 14, 30, 0.9); border: 1px solid var(--card-border);
+  backdrop-filter: blur(8px); padding: 0.5rem 0.9rem; border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4); transition: var(--transition);
 }
-.detail-back:hover { color: var(--accent-cyan); transform: translateX(-3px); }
-.detail-back svg { width: 18px; height: 18px; }
+.detail-back:hover { color: var(--accent-cyan); border-color: var(--accent-cyan); transform: translateX(-3px); }
+.detail-back svg { width: 16px; height: 16px; }
+@media (max-width: 900px) {
+  .detail-back { top: 72px; left: 12px; padding: 0.45rem 0.75rem; font-size: 0.8rem; }
+}
 
 .detail-hero { margin-bottom: 2.5rem; }
 .detail-kicker { color: var(--accent-cyan); font-weight: 600; font-size: 0.8rem; letter-spacing: 3px; text-transform: uppercase; }
@@ -880,13 +915,18 @@ body.tr-blocks.entering #transition .cols span:nth-child(1) { animation-delay: 0
   border-radius: var(--radius); padding: 1.6rem;
 }
 
-/* placeholder note the owner should fill in */
-.fill-note {
-  display: inline-block; margin-top: 0.6rem;
-  font-size: 0.78rem; color: var(--accent-violet);
-  background: rgba(139,124,255,0.1); border: 1px dashed rgba(139,124,255,0.4);
-  padding: 0.3rem 0.7rem; border-radius: 8px;
+/* Secondary note under a detail block (e.g. limitations, projection caveat) */
+.detail-note {
+  margin-top: 0.6rem; font-size: 0.85rem; color: var(--text-muted); font-style: italic;
 }
+/* External links in a detail block */
+.detail-links a {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  color: var(--accent-cyan); font-weight: 600; font-size: 0.9rem;
+  border-bottom: 1px solid rgba(56,189,248,0.35); padding-bottom: 2px;
+  transition: var(--transition);
+}
+.detail-links a:hover { color: var(--accent-teal); border-color: var(--accent-teal); }
 
 /* tech tags reuse .tags */
 .detail-block .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
@@ -923,6 +963,68 @@ a.project-card .view-more {
 }
 a.project-card .view-more svg { width: 14px; height: 14px; transition: var(--transition); }
 a.project-card:hover .view-more svg { transform: translateX(3px); }
+
+/* ===================== PROJECT NAVIGATION TRANSITION ===================== */
+/* Project navigation uses a loading screen (.proj-loader) + the shared navbar
+   transition (body.leaving / body.entering), plus an anti-blink cover on the
+   incoming page (html.proj-covering). All sit BELOW the header so the navbar
+   stays visible and animates like the main deck. */
+
+/* Detail pages reuse the main deck's #edge-hint indicator (pill + filling bar),
+   so no separate hint styles are needed here. */
+
+/* Anti-blink cover: when arriving at a detail page via a card zoom / project
+   slide, html.proj-covering paints a solid panel from the FIRST paint (set
+   synchronously in the page <head>) so the new page never flashes in
+   uncovered. It starts BELOW the header so the navbar is never hidden.
+   js/main.js adds .lift to slide it away. */
+html.proj-covering::before {
+  content: ""; position: fixed; top: var(--nav-h); left: 0; right: 0; bottom: 0; z-index: 9750;
+  background: linear-gradient(150deg, var(--midnight-600), var(--midnight-800));
+  pointer-events: none;
+  transition: transform 0.55s cubic-bezier(0.7,0,0.2,1), opacity 0.4s ease;
+}
+html.proj-covering.lift::before { transform: translateX(-100%); opacity: 0; }
+
+/* Loading screen for project navigation ("Bringing you deeper" / "back").
+   Sits BELOW the header so the navbar stays visible and plays its transition. */
+.proj-loader {
+  position: fixed; top: var(--nav-h); left: 0; right: 0; bottom: 0; z-index: 9600;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 50% 45%, var(--midnight-700), var(--midnight-900) 72%);
+  opacity: 0; transition: opacity 0.35s ease;
+}
+.proj-loader.show { opacity: 1; }
+.proj-loader-inner { display: flex; flex-direction: column; align-items: center; gap: 1.1rem; }
+.proj-loader-ring {
+  width: 46px; height: 46px; border-radius: 50%;
+  border: 3px solid rgba(56,189,248,0.15);
+  border-top-color: var(--accent-cyan); border-right-color: var(--accent-teal);
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.proj-loader-text {
+  font-family: 'Space Grotesk', sans-serif; font-weight: 600; letter-spacing: 1px;
+  color: var(--text-secondary); font-size: 0.95rem;
+}
+.proj-loader-text::after { content: '…'; animation: bbbDots 1.2s steps(4) infinite; }
+@keyframes bbbDots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '…'; } }
+
+/* Highlight the card you just came back to. */
+a.project-card.just-returned {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 2px var(--accent-cyan), 0 16px 40px var(--accent-glow);
+  animation: cardReturn 1.4s ease;
+}
+@keyframes cardReturn {
+  0% { transform: scale(1.04); }
+  40% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .proj-loader, html.proj-covering::before { display: none !important; }
+}
 
 @media (max-width: 700px) {
   .gallery-grid { grid-template-columns: 1fr 1fr; }

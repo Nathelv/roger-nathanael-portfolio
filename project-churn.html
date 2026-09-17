@@ -13,6 +13,12 @@
     if (sessionStorage.getItem('rn-loaded') || sessionStorage.getItem('rn-transition')) {
       document.documentElement.classList.add('no-preloader');
     }
+    try {
+      var _pf = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+      if (sessionStorage.getItem('rn-proj-enter') === _pf) {
+        document.documentElement.classList.add('no-preloader', 'proj-covering');
+      }
+    } catch (e) {}
   </script>
 </head>
 <body class="loading detail-body">
@@ -60,33 +66,31 @@
         <h1>Customer Churn Prediction</h1>
         <p class="lead">A machine learning project predicting customer churn using Random Forest, Decision Tree, and Logistic Regression.</p>
         <div class="detail-meta">
-          <div class="meta"><span class="k">Project Type</span><span class="v">Academic Project</span></div>
+          <div class="meta"><span class="k">Project Type</span><span class="v">Academic Group Project</span></div>
           <div class="meta"><span class="k">Course</span><span class="v">Machine Learning</span></div>
-          <div class="meta"><span class="k">Role</span><span class="v">Team Member</span></div>
+          <div class="meta"><span class="k">Role</span><span class="v">Machine Learning &amp; Data Analysis Team Member</span></div>
           <div class="meta"><span class="k">Focus</span><span class="v">Predictive Modelling</span></div>
         </div>
       </header>
 
       <section class="detail-block">
         <h2>The Problem</h2>
-        <p>Businesses lose revenue when customers leave. Identifying who is likely to churn helps them act early to retain those customers.</p>
-        <span class="fill-note">✎ Sesuaikan dengan konteks dataset yang kalian pakai.</span>
+        <p>E-commerce businesses lose revenue when customers churn. Predicting which customers are likely to leave — and understanding the factors behind it — helps businesses act early to retain them. This project uses the E-Commerce Customer Behavior Dataset from Kaggle (originally 50,000 customers and 25 features, with a 28.9% churn rate).</p>
       </section>
 
       <section class="detail-block">
         <h2>The Solution</h2>
-        <p>We built and compared several classification models — Random Forest, Decision Tree, and Logistic Regression — to predict churn, going through data preparation, feature selection, modelling, and evaluation.</p>
+        <p>We built and compared several classification models — Logistic Regression, Decision Tree, and Random Forest — to predict churn. The workflow covered thorough preprocessing, handling class imbalance with SMOTE (applied only after the train-test split to avoid data leakage), then training and evaluating each model.</p>
       </section>
 
       <section class="detail-block highlight">
         <h2>My Contribution</h2>
-        <p>Contributed to data preparation, feature selection, and evaluating the machine learning models.</p>
-        <span class="fill-note">✎ Ganti dengan kontribusi ASLI kamu (mis. model tertentu, cleaning data, visualisasi hasil).</span>
+        <p>Contributed as a Machine Learning &amp; Data Analysis team member across the modelling and analysis workflow, including data preparation, feature selection, and model evaluation.</p>
       </section>
 
       <section class="detail-block">
         <h2>Technology</h2>
-        <div class="tags"><span>Python</span><span>Random Forest</span><span>Decision Tree</span><span>Logistic Regression</span><span>Data Analysis</span></div>
+        <div class="tags"><span>Python</span><span>Random Forest</span><span>Decision Tree</span><span>Logistic Regression</span><span>SMOTE</span><span>Data Analysis</span></div>
       </section>
 
       <section class="detail-block">
@@ -94,26 +98,26 @@
         <div class="process-flow">
           <span class="step">Data Preparation</span><span class="arrow">→</span>
           <span class="step">Feature Selection</span><span class="arrow">→</span>
+          <span class="step">SMOTE (train only)</span><span class="arrow">→</span>
           <span class="step">Modelling</span><span class="arrow">→</span>
-          <span class="step">Evaluation</span><span class="arrow">→</span>
-          <span class="step">Insight</span>
+          <span class="step">Evaluation</span>
         </div>
+        <p class="detail-note">Preprocessing included missing-value handling, outlier removal, duplicate removal, feature engineering, categorical encoding, standardization, and feature selection. Evaluation used an 80:20 hold-out split with stratified 5-fold cross-validation.</p>
       </section>
 
       <section class="detail-block">
         <h2>Outcome</h2>
-        <p>Trained and compared multiple models to identify which performed best at predicting churn.</p>
-        <span class="fill-note">✎ Tambahkan hasil (mis. akurasi model terbaik) bila ada.</span>
+        <p>Random Forest with SMOTE was the strongest overall approach — Testing Accuracy 90.34%, Precision 85.24%, Recall 80.52%, F1-Score 82.81%, and ROC-AUC 92.27%. Feature analysis highlighted variables such as Customer Service Calls, Lifetime Value, and Cart Abandonment Rate.</p>
+        <p class="detail-note">Limitation: the high training accuracy for Random Forest and Decision Tree indicated possible overfitting. Future improvements noted in the report include model calibration and more advanced explainability such as SHAP.</p>
       </section>
 
       <section class="detail-block">
         <h2>What I Learned</h2>
         <ul>
-          <li>[ISI] Poin soal pentingnya data preparation.</li>
-          <li>[ISI] Poin soal membandingkan model ML.</li>
-          <li>[ISI] Poin soal evaluasi & interpretasi hasil.</li>
+          <li>How careful preprocessing (encoding, scaling, outlier and duplicate handling) shapes model quality.</li>
+          <li>Why SMOTE must be applied only to the training set — keeping the test set in its original distribution to avoid data leakage.</li>
+          <li>How to compare models across multiple metrics (accuracy, precision, recall, F1, ROC-AUC) and read signs of overfitting.</li>
         </ul>
-        <span class="fill-note">✎ Ganti 3 poin di atas dengan pembelajaran asli kamu.</span>
       </section>
 
       <section class="detail-block">
@@ -126,7 +130,6 @@
           <div class="gallery-item">Notebook snippet</div>
           <div class="gallery-item">Results chart</div>
         </div>
-        <span class="fill-note">✎ Ganti kotak ini dengan grafik/screenshot asli.</span>
       </section>
     </div>
   </main>

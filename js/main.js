@@ -876,6 +876,256 @@ function initCursorGlow() {
   });
 }
 
+/* ---------- Detail-page nav ----------
+   On a project detail page the main 01–08 menu is replaced with a Projects
+   sub-nav: "04 Projects" (back to the grid) followed by the five project
+   details, with the current one highlighted. */
+function initDetailNav() {
+  if (!isProjectDetail()) return;
+  var list = document.getElementById('navLinks');
+  if (!list) return;
+
+  var projects = (window.PORTFOLIO && window.PORTFOLIO.projects) || [];
+  var current = currentFile();
+
+  // Short labels so the whole sub-nav fits on ONE line at the main font size.
+  var SHORT = {
+    'project-iot-sawit.html': 'IoT Smart Sawit',
+    'project-healthylife.html': 'HealthyLife Hub',
+    'project-aqquas.html': 'Aqquas',
+    'project-churn.html': 'Customer Churn',
+    'project-kompas.html': 'KOMPAS'
+  };
+
+  var items = [];
+  // First item: back to the Projects grid — numbered "04" like the main nav.
+  items.push('<li><a href="projects.html"><span class="idx">04</span>Projects</a></li>');
+  // Then each project detail, numbered 4.1, 4.2, ...
+  projects.forEach(function (p, i) {
+    if (!p.page) return;
+    var file = p.page.toLowerCase();
+    var active = (file === current) ? ' class="active"' : '';
+    var num = '4.' + (i + 1);
+    var label = SHORT[file] || p.name;
+    items.push('<li><a href="' + p.page + '"' + active + '><span class="idx">' + num + '</span>' + label + '</a></li>');
+  });
+  list.innerHTML = items.join('');
+
+  // Update the header status pill to show the current project.
+  var cur = projects.filter(function (p) { return p.page && p.page.toLowerCase() === current; })[0];
+  var nameEl = document.getElementById('currentPageName');
+  if (nameEl && cur) nameEl.textContent = cur.name;
+
+  document.body.classList.add('is-detail-nav');
+}
+
+/* ---------- Project card <-> detail "zoom" transition ----------
+   Multi-page site, so this is a manual shared-element-style effect:
+   - On projects.html: clicking a card clones it into a full-screen overlay
+     that expands, then navigates to the detail page.
+   - On a project-*.html detail page: it opens revealing from that overlay,
+     and once the user scrolls past the bottom it shrinks back and returns to
+     projects.html, where the originating card is briefly highlighted.
+   Uses sessionStorage to remember which card was used. Fails safe: if
+   anything is missing it just navigates normally. */
+var PROJECT_FILES = ['project-iot-sawit.html', 'project-healthylife.html', 'project-aqquas.html', 'project-churn.html', 'project-kompas.html'];
+function isProjectDetail() { return PROJECT_FILES.indexOf(currentFile()) !== -1; }
+
+function initProjectTransition() {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Shared loader for project navigation. Plays the SAME navbar transition as
+  // the main deck (body.leaving) and shows a labelled loading screen that sits
+  // below the header, so the navbar stays visible and animates. Then navigates.
+  function showProjLoader(text, dest, delay) {
+    document.body.classList.add('leaving');                 // navbar leave animation
+    var ov = document.createElement('div');
+    ov.className = 'proj-loader';
+    ov.innerHTML = '<div class="proj-loader-inner"><span class="proj-loader-ring"></span><span class="proj-loader-text">' + text + '</span></div>';
+    document.body.appendChild(ov);
+    requestAnimationFrame(function () { ov.classList.add('show'); });
+    setTimeout(function () { window.location.href = dest; }, delay || 900);
+  }
+
+  /* ===== A) On the Projects page: intercept card clicks ===== */
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.project-card'));
+  if (cards.length) {
+    cards.forEach(function (card) {
+      var href = (card.getAttribute('href') || '').split('/').pop().toLowerCase();
+      if (PROJECT_FILES.indexOf(href) === -1) return;
+
+      card.addEventListener('click', function (e) {
+        if (reduce || e.metaKey || e.ctrlKey || e.shiftKey) return; // let default happen
+        e.preventDefault();
+        var rect = card.getBoundingClientRect();
+        sessionStorage.setItem('rn-proj', href);
+        sessionStorage.setItem('rn-proj-enter', href);   // consumed once by the detail reveal
+        sessionStorage.setItem('rn-proj-rect', JSON.stringify({ top: rect.top, left: rect.left, width: rect.width, height: rect.height }));
+
+        // Entering a project: "Bringing you deeper" loading screen + navbar anim.
+        showProjLoader('Bringing you deeper', href, 900);
+      });
+    });
+
+    /* Returning FROM a detail page: briefly highlight the originating card. */
+    if (sessionStorage.getItem('rn-proj-return')) {
+      var backHref = sessionStorage.getItem('rn-proj');
+      sessionStorage.removeItem('rn-proj-return');
+      var target = cards.filter(function (c) {
+        return (c.getAttribute('href') || '').split('/').pop().toLowerCase() === backHref;
+      })[0];
+      if (target) {
+        target.classList.add('just-returned');
+        setTimeout(function () {
+          try { target.scrollIntoView({ block: 'center', behavior: 'auto' }); } catch (e) {}
+        }, 50);
+        setTimeout(function () { target.classList.remove('just-returned'); }, 1400);
+      }
+    }
+  }
+
+  /* ===== B) On a project detail page ===== */
+  if (isProjectDetail()) {
+    var current = currentFile();
+    var idx = PROJECT_FILES.indexOf(current);
+    // Follow the navigation order both ways:
+    //  UP at top    -> previous project (or Projects grid if this is the first)
+    //  DOWN at bottom -> next project    (or Projects grid if this is the last)
+    var prevFile = (idx > 0) ? PROJECT_FILES[idx - 1] : 'projects.html';
+    var nextFile = (idx < PROJECT_FILES.length - 1) ? PROJECT_FILES[idx + 1] : 'projects.html';
+
+    // Enter: the page arrived already covered (html.proj-covering, set
+    // synchronously in <head> to avoid any blink). Play the SAME navbar
+    // animate-in as the main deck (body.entering), then lift the cover away.
+    var arrivedViaProj = sessionStorage.getItem('rn-proj-enter') === current;
+    sessionStorage.removeItem('rn-proj-enter');
+    if (arrivedViaProj || document.documentElement.classList.contains('proj-covering')) {
+      document.body.classList.add('entering');
+      setTimeout(function () { document.body.classList.remove('entering'); }, 1000);
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          document.documentElement.classList.add('lift');
+          setTimeout(function () {
+            document.documentElement.classList.remove('proj-covering', 'lift');
+          }, 620);
+        });
+      });
+    }
+
+    if (reduce) return;
+
+    // Boundary hints, labelled with the actual prev/next destination.
+    var projects = (window.PORTFOLIO && window.PORTFOLIO.projects) || [];
+    function nameOf(file) {
+      var p = projects.filter(function (x) { return x.page && x.page.toLowerCase() === file; })[0];
+      return p ? p.name : null;
+    }
+    // Reuse the SAME edge indicator as the main deck (pill + filling bar),
+    // so the "3 scrolls to move" feedback looks identical here.
+    var hint = document.getElementById('edge-hint');
+    var edgeLabel = document.getElementById('edgeLabel');
+    var edgeFill = document.getElementById('edgeFill');
+    function labelFor(direction) {
+      if (direction === 1) {
+        return (nextFile === 'projects.html') ? 'Keep scrolling to return to Projects' : 'Keep scrolling for ' + (nameOf(nextFile) || 'the next project');
+      }
+      return (prevFile === 'projects.html') ? 'Keep scrolling to go back to Projects' : 'Keep scrolling for ' + (nameOf(prevFile) || 'the previous project');
+    }
+    function showHint(direction) {
+      if (!hint) return;
+      hint.classList.remove('top', 'bottom');
+      hint.classList.add(direction === 1 ? 'bottom' : 'top');
+      if (edgeLabel) edgeLabel.textContent = labelFor(direction);
+      hint.classList.add('show');
+    }
+    function hideHint() { if (hint) hint.classList.remove('show'); }
+    function setFill(p) { if (edgeFill) edgeFill.style.width = Math.min(100, p * 100) + '%'; }
+
+    var leaving = false;
+    var charge = 0;
+    var dir = 0;                 // 1 = down/next, -1 = up/back
+    var resetT = null;
+    function atBottom() { return (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 2); }
+    function atTop() { return window.scrollY <= 1; }
+
+    // Go to another project detail: "Bringing you deeper" loader + navbar anim.
+    function goToProject(dest) {
+      if (leaving) return; leaving = true;
+      sessionStorage.setItem('rn-proj-enter', dest);   // incoming page reveals from cover
+      showProjLoader('Bringing you deeper', dest, 900);
+    }
+    // Back to the Projects grid: "Bringing you back" loader + navbar anim.
+    function goBackToGrid() {
+      if (leaving) return; leaving = true;
+      sessionStorage.setItem('rn-proj-return', '1');
+      showProjLoader('Bringing you back', 'projects.html', 900);
+    }
+
+    function trigger(direction) {
+      if (direction === 1) {                       // scrolled past the bottom
+        if (nextFile === 'projects.html') goBackToGrid();   // last project -> back to grid
+        else goToProject(nextFile);
+      } else {                                      // scrolled past the top
+        if (prevFile === 'projects.html') goBackToGrid();   // first project -> back to grid
+        else goToProject(prevFile);
+      }
+    }
+
+    // Discrete "3 pushes" to move, mirroring the main deck's boundary feel.
+    var THRESHOLD = 3;
+    var cooldown = false;
+    function resetCharge() { charge = 0; dir = 0; setFill(0); hideHint(); }
+    function push(direction) {
+      if (leaving) return;
+      if (direction === 1 && !atBottom()) { resetCharge(); return; }
+      if (direction === -1 && !atTop()) { resetCharge(); return; }
+      if (dir !== direction) { charge = 0; dir = direction; }
+      charge += 1;
+      showHint(direction);
+      setFill(charge / THRESHOLD);                       // fill 1/3 -> 2/3 -> full
+      clearTimeout(resetT); resetT = setTimeout(resetCharge, 900);
+      if (charge >= THRESHOLD) { hideHint(); trigger(direction); }
+    }
+
+    // Wheel: debounce so one intentional scroll = one push.
+    window.addEventListener('wheel', function (e) {
+      if (Math.abs(e.deltaY) < 4) return;
+      if (cooldown) return;
+      cooldown = true;
+      setTimeout(function () { cooldown = false; }, 220);
+      push(e.deltaY > 0 ? 1 : -1);
+    }, { passive: true });
+
+    // Touch: one deliberate ~70px swipe past a boundary = one push.
+    var tY = null;
+    var swipeAccum = 0;
+    window.addEventListener('touchstart', function (e) { tY = e.touches[0].clientY; swipeAccum = 0; }, { passive: true });
+    window.addEventListener('touchmove', function (e) {
+      if (tY === null) return;
+      var dy = tY - e.touches[0].clientY; tY = e.touches[0].clientY;
+      swipeAccum += dy;
+      if (swipeAccum > 70) { swipeAccum = 0; push(1); }
+      else if (swipeAccum < -70) { swipeAccum = 0; push(-1); }
+    }, { passive: true });
+    window.addEventListener('touchend', function () { tY = null; swipeAccum = 0; }, { passive: true });
+
+    // Clicking the detail sub-nav (4.1, 4.2 …) also plays a slide transition.
+    // Direction: forward (from right) if the target comes after the current
+    // project, backward (from left) if before. "04 Projects" -> bring-you-back.
+    document.querySelectorAll('#navLinks a').forEach(function (a) {
+      var dest = (a.getAttribute('href') || '').split('/').pop().toLowerCase();
+      a.addEventListener('click', function (e) {
+        if (reduce || e.metaKey || e.ctrlKey || e.shiftKey) return;
+        if (dest === current) { e.preventDefault(); return; }        // already here
+        if (dest === 'projects.html') { e.preventDefault(); goBackToGrid(); return; }
+        if (PROJECT_FILES.indexOf(dest) === -1) return;              // not a project link -> default
+        e.preventDefault();
+        goToProject(dest);
+      });
+    });
+  }
+}
+
 /* ---------- Init ---------- */
 document.addEventListener('DOMContentLoaded', () => {
   buildTransitionDom();
@@ -883,6 +1133,7 @@ document.addEventListener('DOMContentLoaded', () => {
   playEnterTransition();  // must run before preloader so it owns the reveal
   initPreloader();
   initNavState();
+  initDetailNav();   // rebuild nav on detail pages BEFORE listeners attach to links
   initMenu();
   initYear();
   initBoundaryNav();
@@ -891,4 +1142,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initPageDecor();
   initChatbot();
   initCursorGlow();
+  initProjectTransition();
 });
