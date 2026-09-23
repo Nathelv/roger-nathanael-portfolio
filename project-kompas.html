@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -7,7 +7,7 @@
   <title>Roger Nathanael | KOMPAS</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
   <script>
     if (sessionStorage.getItem('rn-loaded') || sessionStorage.getItem('rn-transition')) {
@@ -83,6 +83,18 @@
         <p>KOMPAS is a concept for a web-based academic project management platform for BINUS students. It provides a unified dashboard to track Daily Tasks, Group Projects, and Exam Schedules, uses Kanban boards with Agile Scrum, enables real-time collaboration, and improves lecturer visibility into individual contributions.</p>
       </section>
 
+      <section class="detail-block" id="board">
+        <h2>Project Board</h2>
+        <p>The team's task board and milestone tracking lived in Trello, organised with Kanban lists and Agile Scrum sprints. Browse it below or open the full board in a new tab.</p>
+        <div class="embed-frame ratio-16-9">
+          <iframe src="https://trello.com/b/8cxGP8X5.html" loading="lazy" title="KOMPAS Trello board"></iframe>
+        </div>
+        <div class="embed-actions">
+          <a class="btn btn-primary" href="https://trello.com/b/8cxGP8X5" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="7" y="7" width="3" height="9"/><rect x="14" y="7" width="3" height="5"/></svg>Open Trello Board in New Tab</a>
+        </div>
+        <p class="embed-note">The Trello board must be shared as public for the preview to load. If it doesn't appear, use the button to open it directly.</p>
+      </section>
+
       <section class="detail-block highlight">
         <h2>My Contribution</h2>
         <p>As Business Analyst / Secretary, I focused on business analysis, project documentation, coordination, requirements and project-planning support, and secretary responsibilities.</p>
@@ -123,12 +135,14 @@
       <section class="detail-block">
         <h2>Gallery</h2>
         <div class="gallery-grid">
-          <div class="gallery-item">Dashboard UI</div>
-          <div class="gallery-item">System diagram</div>
-          <div class="gallery-item">Scrum board</div>
-          <div class="gallery-item">Gantt chart</div>
-          <div class="gallery-item">Presentation</div>
-          <div class="gallery-item">Team photo</div>
+          <figure class="gallery-item">
+            <img src="assets/KOMPAS/Project Charter.png" alt="KOMPAS project charter document" loading="lazy">
+            <figcaption>Project Charter</figcaption>
+          </figure>
+          <figure class="gallery-item">
+            <img src="assets/KOMPAS/WBS.png" alt="KOMPAS work breakdown structure" loading="lazy">
+            <figcaption>Work Breakdown Structure</figcaption>
+          </figure>
         </div>
       </section>
     </div>

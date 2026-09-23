@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -7,7 +7,7 @@
   <title>Roger Nathanael | HealthyLife Hub</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
   <script>
     if (sessionStorage.getItem('rn-loaded') || sessionStorage.getItem('rn-transition')) {
@@ -128,21 +128,16 @@
         </ul>
       </section>
 
-      <section class="detail-block">
-        <h2>Links</h2>
-        <div class="detail-links"><a href="https://github.com/Nathelv/HealthyLife-Hub" target="_blank" rel="noopener">GitHub Repository ↗</a></div>
-      </section>
-
-      <section class="detail-block">
-        <h2>Gallery</h2>
-        <div class="gallery-grid">
-          <div class="gallery-item">UI screens</div>
-          <div class="gallery-item">Database schema</div>
-          <div class="gallery-item">Flowchart</div>
-          <div class="gallery-item">Feature demo</div>
-          <div class="gallery-item">Presentation</div>
-          <div class="gallery-item">Team photo</div>
+      <section class="detail-block" id="live">
+        <h2>Live Demo</h2>
+        <p>The deployed HealthyLife Hub is live online — explore the articles, quiz, and AI chatbot right here, or open the full site in a new tab.</p>
+        <div class="embed-frame ratio-16-9">
+          <iframe src="https://healthylife-hub.infinityfree.io/" loading="lazy" title="HealthyLife Hub live website"></iframe>
         </div>
+        <div class="embed-actions">
+          <a class="btn btn-primary" href="https://healthylife-hub.infinityfree.io/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>Open Website in New Tab</a>
+        </div>
+        <p class="embed-note">If the preview doesn't load (some free hosts block embedding), use the button to open the live site directly.</p>
       </section>
     </div>
   </main>

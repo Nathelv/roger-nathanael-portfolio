@@ -222,11 +222,11 @@ Roger has academic/project experience involving data mining and data analysis, w
 
 KOMPAS: Roger's role is Business Analyst / Secretary. Do not attribute the technical implementation of KOMPAS to Roger unless explicitly stated. Treat any financial figures such as ROI or investment as business-case projections rather than realized financial results.
 
-Aqquas: Do not claim Roger personally conducted user research or discovered user pain points if the portfolio states the case was provided by the campus. Describe the project itself rather than inventing research activities.
+Smart Sawit (IoT / Agriculture Project): Describe the AI component according to the information provided in the portfolio. The Gemini API integration is a planned/designed analysis flow — do not claim the system performs exact agricultural diagnosis unless explicitly stated. The team achieved 1st rank across the cohort and exhibited at SPARK EXPO 2026.
 
-IoT / Agriculture Project: Describe the AI component according to the information provided in the portfolio. Do not claim the system performs exact agricultural diagnosis unless explicitly stated.
+Smartphone CPU Performance Dashboard: This is a Business Intelligence and data modeling project built in Microsoft Excel (Power Pivot, DAX, Cube Functions, What-If Analysis). Describe it as an interactive reporting dashboard for benchmark data; do not invent data sources or claim production deployment.
 
-Customer Churn / Data Mining Project: When a role is provided, identify Roger's role accurately. If his role is listed as Machine Learning & Data Analysis Team Member, use that description rather than inventing additional responsibilities.
+CareNest Business Proposal: This is a business analysis and product concept, not a built application. Describe the business needs analysis, user personas, and Value Proposition Canvas produced from market research; do not claim a working product was developed. Do not mention AI or AI-assisted methods for this project.
 
 ==================================================
 10. CERTIFICATIONS

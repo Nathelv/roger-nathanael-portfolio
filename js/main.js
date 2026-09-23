@@ -328,13 +328,20 @@ function initBoundaryNav() {
   });
 }
 
-/* ---------- Pager buttons use the same animated transition ---------- */
+/* ---------- Pager buttons use the same animated transition ----------
+   Covers the top nav, the logo, AND in-page CTAs (e.g. the hero "View My
+   Projects" button). Any link whose href resolves to a known deck page plays
+   the full page transition; everything else (pdf, mailto, external) is left
+   to behave normally. */
 function initPagerLinks() {
-  document.querySelectorAll('.nav-links a, .logo').forEach(a => {
+  document.querySelectorAll('.nav-links a, .logo, .actions a, a.btn').forEach(a => {
     a.addEventListener('click', (e) => {
-      const href = (a.getAttribute('href') || '').split('/').pop().toLowerCase();
+      if (e.metaKey || e.ctrlKey || e.shiftKey) return;        // let modified clicks open a tab
+      const raw = a.getAttribute('href') || '';
+      if (/^(https?:|mailto:|tel:|#)/i.test(raw)) return;      // external / anchor -> default
+      const href = raw.split('/').pop().toLowerCase();
       const targetIndex = PAGES.findIndex(p => p.file === href);
-      if (targetIndex === -1) return; // external link (LinkedIn, mailto, pdf) -> default
+      if (targetIndex === -1) return;                          // not a deck page (e.g. .pdf) -> default
       e.preventDefault();
       goToPage(targetIndex);
     });
@@ -570,7 +577,7 @@ function initChatbot() {
     const t = q.toLowerCase();
     const act = (label, fn) => ({ label, run: fn });
 
-    if (/(project|portfolio|work|built|sawit|iot|healthy|aqquas|churn|kompas)/.test(t)) {
+    if (/(project|portfolio|work|built|sawit|iot|healthy|cpu|dashboard|kompas|carenest)/.test(t)) {
       const projs = KB.projects || [];
       const names = projs.map(p => p.achievement ? `${p.name} (${p.achievement})` : p.name).join(', ');
       const text = projs.length
@@ -580,7 +587,7 @@ function initChatbot() {
       if (projs[0] && projs[0].page) actions.push(act('Open ' + projs[0].name, () => navTo(projs[0].page)));
       return { text: text, actions: actions };
     }
-    if (/(skill|tech|stack|tool|figma|php|python|mysql)/.test(t)) {
+    if (/(skill|tech|stack|tool|figma|php|excel|sql|mysql|dax|bi|requirement)/.test(t)) {
       const cats = (KB.skills && KB.skills.categories) || [];
       const tools = (KB.skills && KB.skills.tools) || [];
       const catNames = cats.map(c => c.title).join(', ');
@@ -593,8 +600,8 @@ function initChatbot() {
       const p = KB.profile || {};
       const edu = (KB.education && KB.education[0]) || {};
       const text = (p.name && edu.institution)
-        ? `${p.name} is a ${p.title} at ${edu.institution}${edu.gpa ? ` (GPA ${edu.gpa})` : ''} who bridges business, technology, and user-centered solutions.`
-        : "Roger bridges business, technology, and user-centered solutions.";
+        ? `${p.name} is a ${p.title} at ${edu.institution}${edu.gpa ? ` (GPA ${edu.gpa})` : ''}, focused on systems analysis, business intelligence, and data-driven solutions.`
+        : "Roger focuses on systems analysis, business intelligence, and data-driven solutions.";
       return { text: text, actions: [ act('Read About', () => navTo('about.html')) ] };
     }
     if (/(experience|volunteer|work experience|gbi|multimedia)/.test(t)) {
@@ -622,7 +629,7 @@ function initChatbot() {
       return { text: text, actions: [ act('See Research', () => navTo('research.html')) ] };
     }
     if (/(cv|resume|download)/.test(t)) {
-      const cv = (KB.contact && KB.contact.cv) || 'assets/Roger-Nathanael-CV.pdf';
+      const cv = (KB.contact && KB.contact.cv) || 'assets/CV Roger Nathanael.pdf';
       return { text: "You can download Roger's CV as a PDF.",
         actions: [ act('Download CV', () => openExternal(cv)) ] };
     }
@@ -631,7 +638,7 @@ function initChatbot() {
       return { text: "Reach out anytime — email or LinkedIn both work. Roger is open to internships.",
         actions: [ act('Go to Contact', () => navTo('contact.html')),
                    act('Email', () => openExternal('mailto:' + (c.email || 'naelnathel@gmail.com') + '?subject=Hello%20Roger')),
-                   act('LinkedIn', () => openExternal(c.linkedin || 'https://www.linkedin.com/in/roger-nathanael')) ] };
+                   act('LinkedIn', () => openExternal(c.linkedin || 'https://www.linkedin.com/in/rogernathanael')) ] };
     }
     if (/(home|start|top|beginning)/.test(t)) {
       return { text: "Sure — taking you home.", actions: [ act('Go Home', () => navTo('index.html')) ] };
@@ -890,11 +897,11 @@ function initDetailNav() {
 
   // Short labels so the whole sub-nav fits on ONE line at the main font size.
   var SHORT = {
-    'project-iot-sawit.html': 'IoT Smart Sawit',
+    'project-iot-sawit.html': 'Smart Sawit',
+    'project-cpu-dashboard.html': 'CPU Dashboard',
     'project-healthylife.html': 'HealthyLife Hub',
-    'project-aqquas.html': 'Aqquas',
-    'project-churn.html': 'Customer Churn',
-    'project-kompas.html': 'KOMPAS'
+    'project-kompas.html': 'KOMPAS',
+    'project-carenest.html': 'CareNest'
   };
 
   var items = [];
@@ -928,7 +935,7 @@ function initDetailNav() {
      projects.html, where the originating card is briefly highlighted.
    Uses sessionStorage to remember which card was used. Fails safe: if
    anything is missing it just navigates normally. */
-var PROJECT_FILES = ['project-iot-sawit.html', 'project-healthylife.html', 'project-aqquas.html', 'project-churn.html', 'project-kompas.html'];
+var PROJECT_FILES = ['project-iot-sawit.html', 'project-cpu-dashboard.html', 'project-healthylife.html', 'project-kompas.html', 'project-carenest.html'];
 function isProjectDetail() { return PROJECT_FILES.indexOf(currentFile()) !== -1; }
 
 function initProjectTransition() {
@@ -1123,6 +1130,15 @@ function initProjectTransition() {
         goToProject(dest);
       });
     });
+
+    // "Back to Projects" button (top-left) also plays the "Bringing you back" loader.
+    document.querySelectorAll('.detail-back').forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        if (reduce || e.metaKey || e.ctrlKey || e.shiftKey) return;
+        e.preventDefault();
+        goBackToGrid();
+      });
+    });
   }
 }
 
@@ -1143,4 +1159,98 @@ document.addEventListener('DOMContentLoaded', () => {
   initChatbot();
   initCursorGlow();
   initProjectTransition();
+  initGallery();
+  initCardLinks();
 });
+
+/* ---------- Project card action buttons ----------
+   The whole project card is an <a> to the detail page, so the buttons are
+   <span data-href> that stop the click from bubbling to the card.
+   - External links (http/https, e.g. Trello, live site) open in a new tab.
+   - Internal links to a project detail page play the SAME "Bringing you deeper"
+     loader as clicking the card, then navigate (keeping any #hash so the detail
+     page still scrolls to the right section). */
+function initCardLinks() {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var busy = false;
+
+  function bringYouDeeper(dest) {
+    if (busy) return; busy = true;
+    // The destination file (without the #hash) is what the detail page checks
+    // to reveal itself from the cover — same keys the card click uses.
+    var file = dest.split('#')[0].split('/').pop().toLowerCase();
+    try {
+      sessionStorage.setItem('rn-proj', file);
+      sessionStorage.setItem('rn-proj-enter', file);
+    } catch (e) {}
+    document.body.classList.add('leaving');                 // navbar leave animation
+    var ov = document.createElement('div');
+    ov.className = 'proj-loader';
+    ov.innerHTML = '<div class="proj-loader-inner"><span class="proj-loader-ring"></span><span class="proj-loader-text">Bringing you deeper</span></div>';
+    document.body.appendChild(ov);
+    requestAnimationFrame(function () { ov.classList.add('show'); });
+    setTimeout(function () { window.location.href = dest; }, 900);
+  }
+
+  document.querySelectorAll('.project-card .card-link').forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+      var href = el.getAttribute('data-href');
+      if (!href || el.classList.contains('disabled')) return;
+      if (/^https?:\/\//i.test(href)) {
+        window.open(href, '_blank', 'noopener');            // external -> new tab
+      } else if (reduce) {
+        window.location.href = href;                        // no animation preference
+      } else {
+        bringYouDeeper(href);                               // internal -> deeper loader
+      }
+    });
+  });
+}
+
+/* ---------- Gallery lightbox ----------
+   Click any gallery image to view it full-size in an overlay. Works on the
+   detail pages that use <figure class="gallery-item"><img>. */
+function initGallery() {
+  var imgs = Array.prototype.slice.call(
+    document.querySelectorAll('figure.gallery-item img')
+  );
+  if (!imgs.length) return;
+
+  var box = document.createElement('div');
+  box.className = 'lightbox';
+  box.setAttribute('aria-hidden', 'true');
+  box.innerHTML =
+    '<button class="lightbox-close" aria-label="Close">&times;</button>' +
+    '<img class="lightbox-img" alt="">';
+  document.body.appendChild(box);
+
+  var big = box.querySelector('.lightbox-img');
+  var closeBtn = box.querySelector('.lightbox-close');
+
+  function open(src, alt) {
+    big.src = src;
+    big.alt = alt || '';
+    box.classList.add('open');
+    box.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    box.classList.remove('open');
+    box.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    // clear src after the fade so we don't flash the old image next open
+    setTimeout(function () { if (!box.classList.contains('open')) big.src = ''; }, 300);
+  }
+
+  imgs.forEach(function (img) {
+    img.addEventListener('click', function () { open(img.src, img.alt); });
+  });
+  closeBtn.addEventListener('click', close);
+  box.addEventListener('click', function (e) { if (e.target === box) close(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && box.classList.contains('open')) close();
+  });
+}

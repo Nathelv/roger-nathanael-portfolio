@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Smartphone CPU Performance Dashboard - project by Roger Nathanael." />
+  <title>Roger Nathanael | Smartphone CPU Performance Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script>
+    if (sessionStorage.getItem('rn-loaded') || sessionStorage.getItem('rn-transition')) {
+      document.documentElement.classList.add('no-preloader');
+    }
+    try {
+      var _pf = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+      if (sessionStorage.getItem('rn-proj-enter') === _pf) {
+        document.documentElement.classList.add('no-preloader', 'proj-covering');
+      }
+    } catch (e) {}
+  </script>
+</head>
+<body class="loading detail-body">
+
+  <div id="preloader">
+    <div class="pre-logo" id="preLogo"></div>
+    <div class="pre-ring"></div>
+    <div class="pre-bar"><i></i></div>
+    <div class="pre-text">Loading Portfolio</div>
+  </div>
+
+  <div class="bg-glow"></div>
+
+  <nav>
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">
+        <span class="logo-name">Roger<span>.</span>Nathanael</span>
+        <span class="logo-role">Business Information Technology Student</span>
+      </a>
+      <div class="nav-right">
+        <ul class="nav-links" id="navLinks">
+          <li><a href="index.html"><span class="idx">01</span>Home</a></li>
+          <li><a href="about.html"><span class="idx">02</span>About</a></li>
+          <li><a href="skills.html"><span class="idx">03</span>Skills</a></li>
+          <li><a href="projects.html"><span class="idx">04</span>Projects</a></li>
+          <li><a href="experience.html"><span class="idx">05</span>Experience</a></li>
+          <li><a href="education.html"><span class="idx">06</span>Education</a></li>
+          <li><a href="research.html"><span class="idx">07</span>Research</a></li>
+          <li><a href="contact.html"><span class="idx">08</span>Contact</a></li>
+        </ul>
+        <div class="page-status">
+          <span class="pill"><span class="dot"></span><span id="currentPageName">Projects</span></span>
+        </div>
+      </div>
+      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <main class="detail-main">
+    <div class="container">
+      <a class="detail-back" href="projects.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>Back to Projects</a>
+
+      <header class="detail-hero">
+        <span class="detail-kicker">Business Intelligence &middot; Data Modeling</span>
+        <h1>Smartphone CPU Performance Dashboard</h1>
+        <p class="lead">An interactive Business Intelligence dashboard built in Microsoft Excel to process and evaluate smartphone processor benchmark data, using DAX measures, interactive slicers, and What-If Analysis for multi-variable chipset comparison.</p>
+        <div class="detail-meta">
+          <div class="meta"><span class="k">Category</span><span class="v">Business Intelligence &amp; Data Modeling</span></div>
+          <div class="meta"><span class="k">Date</span><span class="v">May 2026</span></div>
+          <div class="meta"><span class="k">Project Type</span><span class="v">Academic Project</span></div>
+          <div class="meta"><span class="k">Focus</span><span class="v">Data Modeling &amp; Reporting</span></div>
+        </div>
+      </header>
+
+      <section class="detail-block" id="live">
+        <h2>Dashboard Preview</h2>
+        <p>A static preview of the Excel dashboard is embedded below. The slicers, DAX measures, and What-If Analysis are interactive BI features that only run in the full Excel app — open or download the workbook to explore them fully.</p>
+        <div class="embed-frame ratio-4-3">
+          <iframe src="https://1drv.ms/x/c/95f2ffe39defc857/IQSu22VKJcNqQ5VL4Xs-76AOAcljkI-hia0CB4qGTVjcJSc" scrolling="no" loading="lazy" title="Smartphone CPU Performance Dashboard (Excel)"></iframe>
+        </div>
+        <div class="embed-actions">
+          <a class="btn btn-primary" href="https://1drv.ms/x/c/95f2ffe39defc857/IQSu22VKJcNqQ5VL4Xs-76AOAcljkI-hia0CB4qGTVjcJSc" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></svg>Open / Download Workbook</a>
+        </div>
+        <p class="embed-note">The online viewer shows a read-only preview — full interactivity (slicers, DAX, What-If) requires opening the file in Microsoft Excel.</p>
+      </section>
+
+      <section class="detail-block">
+        <h2>Overview</h2>
+        <p>This project delivers an interactive Business Intelligence reporting dashboard that processes and evaluates a smartphone processor performance benchmark dataset. The goal was to turn raw benchmark numbers into a decision-ready view where chipset performance can be compared across multiple variables.</p>
+      </section>
+
+      <section class="detail-block highlight">
+        <h2>What I Did</h2>
+        <ul>
+          <li>Built an interactive Business Intelligence reporting dashboard to process and evaluate a smartphone processor performance benchmark dataset.</li>
+          <li>Developed custom DAX-based measures and interactive slicers to present multi-variable comparisons of chipset performance KPIs.</li>
+          <li>Applied What-If Analysis simulations to model device performance scenarios as a basis for data-driven decision making.</li>
+        </ul>
+      </section>
+
+      <section class="detail-block">
+        <h2>Data Modeling Approach</h2>
+        <p>The dashboard is built on a multidimensional data model using Power Pivot, with DAX measures for calculated KPIs and Cube Functions for flexible reporting layouts. Interactive slicers let a user filter and compare chipsets on demand, while What-If Analysis parameters simulate alternative performance scenarios.</p>
+        <div class="process-flow">
+          <span class="step">Benchmark Dataset</span><span class="arrow">&rarr;</span>
+          <span class="step">Power Pivot Model</span><span class="arrow">&rarr;</span>
+          <span class="step">DAX Measures</span><span class="arrow">&rarr;</span>
+          <span class="step">Slicers &amp; What-If</span><span class="arrow">&rarr;</span>
+          <span class="step">Dashboard</span>
+        </div>
+      </section>
+
+      <section class="detail-block">
+        <h2>Tech Stack</h2>
+        <div class="tags"><span>Microsoft Excel</span><span>Power Pivot</span><span>DAX</span><span>Cube Functions</span><span>What-If Analysis</span><span>Interactive Slicers</span></div>
+      </section>
+
+      <section class="detail-block">
+        <h2>What I Learned</h2>
+        <ul>
+          <li>How to design a multidimensional data model and write DAX measures for calculated KPIs.</li>
+          <li>Using slicers and Cube Functions to build a flexible, interactive reporting layout.</li>
+          <li>Applying What-If Analysis to support data-driven decisions rather than static reporting.</li>
+        </ul>
+      </section>
+
+      <section class="detail-block">
+        <h2>Gallery</h2>
+        <div class="gallery-grid">
+          <figure class="gallery-item">
+            <img src="assets/CPU-Dashboard-Image/Dashboard Overview.png" alt="Dashboard overview" loading="lazy">
+            <figcaption>Dashboard overview</figcaption>
+          </figure>
+          <figure class="gallery-item">
+            <img src="assets/CPU-Dashboard-Image/KPI.png" alt="KPI comparison view" loading="lazy">
+            <figcaption>KPI comparison</figcaption>
+          </figure>
+          <figure class="gallery-item">
+            <img src="assets/CPU-Dashboard-Image/DAX.png" alt="DAX measures" loading="lazy">
+            <figcaption>DAX measures</figcaption>
+          </figure>
+          <figure class="gallery-item">
+            <img src="assets/CPU-Dashboard-Image/Slicer.png" alt="Interactive slicer filters" loading="lazy">
+            <figcaption>Slicer filters</figcaption>
+          </figure>
+          <figure class="gallery-item">
+            <img src="assets/CPU-Dashboard-Image/What-If-Scenario.png" alt="What-If analysis scenario" loading="lazy">
+            <figcaption>What-If scenario</figcaption>
+          </figure>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/portfolio-data.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
